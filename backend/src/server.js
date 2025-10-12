@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const connectDb = require('../src/config/db')
 const authRoutes = require('../src/routes/auth.routes')
+const donationsRoutes = require('./routes/donations.routes')
 
 
 dotenv.config()
@@ -11,6 +12,7 @@ const port = process.env.PORT || 3001
 
 app.use(express.json())
 app.use('/', authRoutes)
+app.use('/api/donations', donationsRoutes)
 
 
 

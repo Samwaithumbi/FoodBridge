@@ -3,16 +3,20 @@ const dotenv = require('dotenv')
 const connectDb = require('../src/config/db')
 const authRoutes = require('../src/routes/auth.routes')
 const donationsRoutes = require('./routes/donations.routes')
-
-
+const cors = require("cors")
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3001
 
+
+app.use(cors( {
+ origin: "http://localhost:5173", // your React dev server
+credentials: true,}))
 app.use(express.json())
-app.use('/', authRoutes)
+app.use('/api/auth', authRoutes)
 app.use('/api/donations', donationsRoutes)
+
 
 
 

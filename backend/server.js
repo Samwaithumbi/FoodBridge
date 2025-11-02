@@ -1,8 +1,8 @@
 const express = require('express')
 const dotenv = require('dotenv')
-const connectDb = require('../src/config/db')
-const authRoutes = require('../src/routes/auth.routes')
-const donationsRoutes = require('./routes/donations.routes')
+const connectDb = require('./src/config/db')
+const authRoutes = require('./src/routes/auth.routes')
+const donationsRoutes = require('./src/routes/donations.routes')
 const cors = require("cors")
 dotenv.config()
 

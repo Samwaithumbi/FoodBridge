@@ -10,7 +10,7 @@ const donationSchema = new mongoose.Schema({
       },
       image: {
         type: String,
-        default: "https://placehold.co/400x300", // fallback image
+       
       },
       location: {
         type: String,

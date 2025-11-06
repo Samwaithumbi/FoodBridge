@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
-    username:{
+    name:{
         type:String,
         require: [true, 'Username is required'],
         trim: true,
@@ -27,10 +27,17 @@ const userSchema = new mongoose.Schema({
         enum:['donor', 'beneficiary', 'admin'],
         default:'donor'
     },
+    phone:{
+      type: String,
+      required: true
+    },
     location:{
         type:String,
         require: true,
         trim: true
+    },
+    profilePic:{
+        type:String
     }
 }, {timestamps:true})
 

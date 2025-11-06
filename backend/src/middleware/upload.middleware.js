@@ -7,6 +7,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "foodbridge_uploads", // or project-specific name
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    transformation: [{ width: 400, height: 400, crop: "fill" }],
   },
 });
 

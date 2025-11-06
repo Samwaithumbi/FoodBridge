@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
-import axios from "axios"; // ✅ You forgot to import axios
+import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -28,7 +27,7 @@ const Register = () => {
 
     // Basic validation
     if (
-      !formData.username ||
+      !formData.name ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword ||
@@ -45,6 +44,7 @@ const Register = () => {
       setIsLoading(true);
       const res = await axios.post("http://localhost:3000/api/auth/register", formData);
 
+      
       if (res.status === 201 || res.data.success) {
         alert("Registration successful!");
         navigate("/login");
@@ -79,17 +79,17 @@ const Register = () => {
         <form className="space-y-5" onSubmit={handleSubmit} autoComplete="on">
           {/* Name */}
           <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
               Full Name
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
+              id="name"
+              name="name"
               placeholder="Enter your name"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none transition"
               onChange={handleChange}
-              value={formData.username}
+              value={formData.name}
               autoComplete="true"
             />
           </div>

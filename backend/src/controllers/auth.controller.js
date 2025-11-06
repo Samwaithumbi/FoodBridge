@@ -3,7 +3,7 @@ const generateToken = require('../utils/generateToken')
 
 //register new user
 const registerUser = async(req, res)=>{
-    const {username, email, password, role, location}=req.body
+    const {name, email, password, role, location}=req.body
     try {
         //check if user exists
         const userExists = await User.findOne({email})
@@ -11,11 +11,11 @@ const registerUser = async(req, res)=>{
            return res.status(400).json({message:'User already exists login to continue'})
         }else{
             //create new user
-            const user = await User.create({username, email, password, role, location})
+            const user = await User.create({name, email, password, role, location})
             res.status(201).json({
                 message:'User created successfully',
                 _id: user.id,
-                username: user.username,
+                name: user.name,
                 email: user.email,
                 token: generateToken(user.id),
             })
@@ -37,7 +37,7 @@ const loginUser=async(req, res)=>{
             res.status(200).json({
                 message:'Logged in successfully',
                 _id: user.id,
-                username: user.username,
+                name: user.name,
                 email: user.email,
                 token: generateToken(user.id),
             })
@@ -50,5 +50,44 @@ const loginUser=async(req, res)=>{
 }
 
 
+//user profile/data
+const myProfile = (req, res)=>{
+    try {
+        res.json(req.user)
+    } catch (error) {
+        res.json({mssg:"Failed to fetch user data"})
+    }
 
-module.exports={registerUser, loginUser}
+}
+
+//update profile
+const editProfile = async (req, res) => {
+    try {
+        const { username, email, phone, location, role } = req.body;
+        let profilePic = req.body.profilePic;
+    
+        // If image uploaded, push to Cloudinary
+        if (req.file) {
+          const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: "user_profiles",
+          });
+          profilePic = result.secure_url;
+        }
+    
+        const user = await User.findByIdAndUpdate(
+          req.params.id,
+          { username, email, phone, location, role, profilePic },
+          { new: true }
+        );
+    
+        res.status(200).json(user);
+      } catch (error) {
+        console.error("Update error:", error);
+        res.status(500).json({ message: error.message });
+      }
+  };
+  
+
+
+
+module.exports={registerUser, loginUser, myProfile, editProfile}

@@ -31,8 +31,9 @@ export default function Login() {
       setIsLoading(true)
 
       const res =await axios.post("http://localhost:3000/api/auth/login", formData)
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("userData",JSON.stringify(res.data))
+      localStorage.setItem("token", res.data.token)
+      console.log(res.data);
       if (res.status === 200 || res.data.success) {
         alert("Logged in successful")
         navigate("/donor-dashboard")

@@ -1,5 +1,5 @@
 import { FaPlus } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const AddDonation = () => {
@@ -57,7 +57,7 @@ const AddDonation = () => {
       });
 
       console.log("Donation created:", res.data);
-      setAddDonation(false); // close modal
+      setAddDonation(false);
       setFormData({ title: "", description: "", image: null, location: "", expiryDate: "" });
     } catch (error) {
       console.log("Error posting:", error);
@@ -69,7 +69,6 @@ const AddDonation = () => {
 
   return (
     <div>
-      {/* Add Donation Button */}
       <div className="mt-4 md:mt-0">
         <button
           className="flex items-center gap-2 bg-orange-600 text-white text-lg font-semibold px-5 py-3 rounded-xl transition-all duration-300 hover:bg-orange-500 hover:scale-105 shadow-md"

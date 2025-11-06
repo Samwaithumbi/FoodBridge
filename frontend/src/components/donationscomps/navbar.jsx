@@ -1,13 +1,35 @@
-const Nav = () => {
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const Nav = ({username,userId}) => {
+  const[openProfile, setOpenProfile]= useState(false)
+  const navigate = useNavigate()
+
+  const handleProfile =()=>{
+    navigate('/profile')
+  }
+
+  //handle logout
+  const handleLogout = ()=>{
+    localStorage.clear('userData')
+    navigate('/login')
+    console.log('Logged out');
+  }
+
     return ( 
         <>
-           <div className="flex items-center gap-3">
-             <img src="hero.png" 
-               className="h-[50px] w-[50px] rounded-[50%]"
+           <div className="flex  items-center gap-3 justify-end ">
+            <div className="flex items-center gap-2 p-2 hover:bg-amber-100 cursor-pointer" onClick={handleProfile}>
+              <img src="hero.png" 
+                className="h-[50px] w-[50px] rounded-[50%]"
 
-             alt="profilepic" />
-             <p>Sam</p>
-             <button className="text-xl p-1.5 font-semibold hover:bg-amber-800 rounded-2xl ">Logout</button>
+              alt="profilepic" />
+              <p className="text-xl font-bold">{username}</p>
+            </div>
+             <button 
+                className="text-xl p-1.5 font-semibold hover:bg-orange-600 hover:text-amber-50 rounded-2xl"
+               onClick={handleLogout}
+             >Logout</button>
            </div>
         </>
      );

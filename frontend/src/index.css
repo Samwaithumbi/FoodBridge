@@ -19,10 +19,10 @@
     @apply text-3xl font-bold text-black
   }
   h2{
-    @apply text-2xl font-bold text-black
+    @apply text-2xl font-semibold text-black
   }
   h3{
-    @apply text-xl font-bold text-black
+    @apply text-lg font-semibold text-black
   }
   p{
     @apply text-lg text-gray-900

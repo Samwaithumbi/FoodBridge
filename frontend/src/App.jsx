@@ -5,6 +5,8 @@ import Login from './pages/login'
 import { Route, Routes } from 'react-router-dom';
 import DonorDash from './pages/donorDashboard';
 import BeneficiaryDash from './pages/beneficiaryDashboard';
+import ProfilePage from './pages/profile';
+
 
 const App = () => {
   return ( 
@@ -14,6 +16,7 @@ const App = () => {
       <Route path="/login" element={<Login/>} />
       <Route path='/donor-dashboard' element={<DonorDash/>} />
       <Route path='/beneficiary-dashboard' element={<BeneficiaryDash/>} />
+      <Route path='profile' element={<ProfilePage/>} />
     </Routes>
    );
 }

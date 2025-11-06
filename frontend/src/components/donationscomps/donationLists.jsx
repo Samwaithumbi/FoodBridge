@@ -9,7 +9,7 @@ const Donations = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const token = localStorage.getItem("token"); // saved after login
+        const token = localStorage.getItem("token")
         const res = await axios.get("http://localhost:3000/api/donations/my-donations", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -37,9 +37,10 @@ const Donations = () => {
   }
 
   return (
-    <div className="m-4 flex flex-col items-center gap-4">
+    <div className="m-4">
       <h1 className="text-2xl font-semibold text-green-700 mb-3">Donations</h1>
 
+      <div className="grid grid-cols-1 md:grid-cols-2">
       {donations.map((donation) => (
         <div
           key={donation._id}
@@ -67,6 +68,8 @@ const Donations = () => {
           <div className="ml-3 text-green-600 font-semibold">Claimed</div>
         </div>
       ))}
+      </div>
+      
     </div>
   );
 };

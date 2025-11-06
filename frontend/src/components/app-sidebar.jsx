@@ -42,7 +42,7 @@ const items = [
  
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="fixed md:static">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>

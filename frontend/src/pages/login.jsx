@@ -34,10 +34,13 @@ export default function Login() {
       localStorage.setItem("userData",JSON.stringify(res.data))
       localStorage.setItem("token", res.data.token)
       console.log(res.data);
-      if (res.status === 200 || res.data.success) {
+      if (res.status === 200 && res.data.role =="donor" ) {
         alert("Logged in successful")
         navigate("/donor-dashboard")
+      }else{
+        navigate('/beneficiary-dashboard')
       }
+
     } catch (err) {
       setError(err.response?.data?.message || "Logging in failed. Try again.");
     }finally{

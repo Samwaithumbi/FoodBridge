@@ -1,6 +1,6 @@
 import AddDonation from "./addDonation";
 
-const DonorWelcome = ({name}) => {
+const DonorWelcome = ({name, donations, setDonations}) => {
   
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -24,7 +24,7 @@ const DonorWelcome = ({name}) => {
         </p>
       </div>
 
-     <AddDonation/>
+     <AddDonation  donations={donations} setDonations={setDonations}/>
     </section>
   );
 };

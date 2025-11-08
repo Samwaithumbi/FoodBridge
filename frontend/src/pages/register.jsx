@@ -27,11 +27,11 @@ const Register = () => {
 
     // Basic validation
     if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword ||
-      !formData.role
+      !formData.name || 
+      !formData.email || 
+      !formData.password || 
+      !formData.confirmPassword ||  
+      !formData.role  
     ) {
       return setError("All fields are required.");
     }

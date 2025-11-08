@@ -1,8 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const Donations = () => {
-  const [donations, setDonations] = useState([]);
+const Donations = ({donations, setDonations}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -36,6 +35,19 @@ const Donations = () => {
     return <p className="text-center mt-5">No donations available yet.</p>;
   }
 
+    const handleDelete = async(id)=>{
+      
+      try {
+        const res = await axios.delete(`http://localhost:3000/api/donations/${id}`)
+        console.log("Deleted", res.data);
+        setDonations((prev) => prev.filter((d) => d._id !== id));
+      } catch (error) {
+        console.error(error.response?.data || error.message);
+      }
+    }
+  
+  
+
   return (
     <div className="m-4">
       <h1 className="text-2xl font-semibold text-green-700 mb-3">Donations</h1>
@@ -65,7 +77,13 @@ const Donations = () => {
               </p>
             </div>
           </div>
-          <div className="ml-3 text-green-600 font-semibold">Claimed</div>
+          <div className="flex flex-col items-center justify-center">
+          <div className="ml-3 text-green-600 font-semibold">Available</div>
+          <button
+           className="bg-red-400 p-2 text-amber-50 text-lg font-semibold rounded-4xl hover:bg-red-600 "
+           onClick={()=>handleDelete(donation._id)}
+          >Delete</button>
+          </div>
         </div>
       ))}
       </div>

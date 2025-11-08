@@ -2,11 +2,12 @@ import { FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const AddDonation = () => {
+const AddDonation = ({donations, setDonations}) => {
   const [addDonation, setAddDonation] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    quantity:"",
     image: "",
     location: "",
     expiryDate: "",
@@ -28,8 +29,8 @@ const AddDonation = () => {
     e.preventDefault();
     setError(false);
 
-    const { title, description, image, location, expiryDate } = formData;
-    if (!title || !description || !image || !location || !expiryDate) {
+    const { title, description,quantity, image, location, expiryDate } = formData;
+    if (!title || !description || !quantity || !image || !location || !expiryDate) {
       return setError("All fields are required");
     }
 
@@ -40,14 +41,12 @@ const AddDonation = () => {
       const data = new FormData();
       data.append("title", title);
       data.append("description", description);
+      data.append("quantity", quantity);
       data.append("image", image);
       data.append("location", location);
       data.append("expiryDate", expiryDate);
 
-      console.log("Sending image:", image); // ✅ add this
-
       const token = localStorage.getItem("token");
-
 
       const res = await axios.post("http://localhost:3000/api/donations/create", data, {
           headers: {
@@ -58,7 +57,8 @@ const AddDonation = () => {
 
       console.log("Donation created:", res.data);
       setAddDonation(false);
-      setFormData({ title: "", description: "", image: null, location: "", expiryDate: "" });
+      setFormData({ title: "", description: "", quantity:"", image: null, location: "", expiryDate: "" });
+      
     } catch (error) {
       console.log("Error posting:", error);
       setError(error.response?.data?.message || "Donation failed. Try again.");
@@ -132,7 +132,19 @@ const AddDonation = () => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 outline-none resize-none"
                 ></textarea>
               </div>
-
+              <div>
+                <label htmlFor="quantity" className="block font-medium mb-1">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  id="quantity"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 outline-none"
+                />
+              </div>
               <div>
                 <label htmlFor="image" className="block font-medium mb-1">
                   Image

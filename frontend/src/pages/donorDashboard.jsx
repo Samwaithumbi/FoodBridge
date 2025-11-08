@@ -4,8 +4,16 @@ import DonorWelcome from "@/components/donationscomps/donar-welcome"
 import Stats from "@/components/donationscomps/stats"
 import Donations from "@/components/donationscomps/donationLists"
 import Nav from "@/components/donationscomps/navbar"
+import { useState } from "react"
 
 export default function Layout() {
+  const [donations, setDonations]=useState({
+    title: "",
+    description: "",
+    image: "",
+    location: "",
+    expiryDate: "",
+  })
 
   const userData=JSON.parse(localStorage.getItem("userData"))
   return (
@@ -21,14 +29,14 @@ export default function Layout() {
         </div>
   
         
-        <section className="mb-6">
-          <DonorWelcome name={userData.name} />
+        <section className="mt-13">
+          <DonorWelcome  donations={donations} setDonations={setDonations} name={userData.name} />
         </section>
         <section className="mb-6">
           <Stats />
         </section>
         <section>
-          <Donations />
+          <Donations donations={donations} setDonations={setDonations}/>
         </section>
       </main>
     </div>

@@ -7,7 +7,7 @@ const { protect, authorize } = require("../middleware/auth.middleware");
 
 
 router.post("/create", protect, upload.single("image"), createDonation);
-router.get('/', getDonations)
+router.get('/all-donations', getDonations)
 router.get('/my-donations',protect, getMyDonations)
 router.get('/:id', protect, authorize('donor', 'admin'),  getOneDonation)
 router.put('/:id', protect, authorize('donor', 'admin'),  updateDonation)

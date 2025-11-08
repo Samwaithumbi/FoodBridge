@@ -4,16 +4,15 @@ const Donations = require('../models/donation.model')
 //create new donation
 const createDonation = async (req, res) => {
   try {
-    console.log("Body:", req.body);
-    console.log("File received:", req.file);
-
     const donation = await Donations.create({
       title: req.body.title,
       description: req.body.description,
       image: req.file ? req.file.path : null,
       location: req.body.location,
       expiryDate: req.body.expiryDate,
+      quantity:req.body.quantity,
       donor: req.user._id,
+
     });
 
     res.status(201).json({ success: true, donation });

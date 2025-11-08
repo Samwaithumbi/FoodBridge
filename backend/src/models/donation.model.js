@@ -20,6 +20,10 @@ const donationSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Please provide an expiry date"]
       },
+      quantity:{
+        type: Number,
+        required: [true, "Please the quantity of donation"]
+      },
       status: {
         type: String,
         enum: ["available", "claimed", "expired"],

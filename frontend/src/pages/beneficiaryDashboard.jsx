@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import AvailableFood from "@/components/beneficiarydashcomps/availableFoods";
 import Nav from "@/components/donationscomps/navbar";
+import BeneficiaryStats from "@/components/beneficiarydashcomps/statsStatus";
 
 const BeneficiaryDash  = () => {
    
@@ -16,6 +17,7 @@ const BeneficiaryDash  = () => {
                 </div>
                 <div className="mt-13">
                  <AvailableFood/>
+                 <BeneficiaryStats/>
                 </div>
                
             </main>

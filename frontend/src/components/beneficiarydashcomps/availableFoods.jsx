@@ -1,24 +1,50 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AvailableFood = () => {
   const [availableDonations, setAvailableDonations] = useState([]);
+  const token =localStorage.getItem('token')
 
+  //fetching donations
   useEffect(() => {
     const fetchAvailableDonations = async () => {
+      let currentDate = new Date()
+      console.log(currentDate);
       try {
         const res = await axios.get(
           "http://localhost:3000/api/donations/all-donations"
         );
         setAvailableDonations(res.data.donations);
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
+        toast.error("❌Failed to fetch available donations")
       }
     };
 
     fetchAvailableDonations();
   }, []);
 
+  //requesting donation
+  const handleRequest=async(donationId)=>{
+    try {
+      const res=await axios.post("http://localhost:3000/api/donations/requests", {donationId}, {
+        headers:{
+          Authorization:`Bearer ${token}`,
+          'Content-Type':'application/json'
+        }
+      } )
+      console.log("req successfully", res.data);
+      toast.success("✅Request was successfully")
+    } catch (error) {
+      console.error("Request failed:", error.response?.data || error.message);
+      toast.error("❌Request failed");
+    }
+  }
+
+  
+
+ 
   return (
     <div className="px-6 py-8 bg-gray-50 min-h-screen">
       <div className="mb-6 text-center">
@@ -83,7 +109,9 @@ const AvailableFood = () => {
                   </div>
                 </div>
 
-                <button className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200">
+                <button 
+                onClick={()=>handleRequest(donation._id)}
+                className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200">
                   Request Food
                 </button>
               </div>

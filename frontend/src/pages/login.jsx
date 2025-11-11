@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 
 export default function Login() {
@@ -35,14 +36,15 @@ export default function Login() {
       localStorage.setItem("token", res.data.token)
       console.log(res.data);
       if (res.status === 200 && res.data.role =="donor" ) {
-        alert("Logged in successful")
+        toast.success("Logged in successful")
         navigate("/donor-dashboard")
       }else{
+        toast.success("Logged in successful")
         navigate('/beneficiary-dashboard')
       }
 
     } catch (err) {
-      setError(err.response?.data?.message || "Logging in failed. Try again.");
+      toast.error(err.response?.data?.message || "Logging in failed. Try again.");
     }finally{
       setIsLoading(false)
     }

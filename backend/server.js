@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const connectDb = require('./src/config/db')
 const authRoutes = require('./src/routes/auth.routes')
 const donationsRoutes = require('./src/routes/donations.routes')
+const requestsRoutes = require("../backend/src/routes/requests.routes")
 const cors = require("cors")
 dotenv.config()
 
@@ -16,6 +17,7 @@ credentials: true,}))
 app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/donations', donationsRoutes)
+app.use('/api/donations', requestsRoutes)
 
 
 

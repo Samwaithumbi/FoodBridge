@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 const Donations = ({donations, setDonations}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const token = localStorage.getItem("token")
         const res = await axios.get("http://localhost:3000/api/donations/my-donations", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -38,7 +38,11 @@ const Donations = ({donations, setDonations}) => {
     const handleDelete = async(id)=>{
       
       try {
-        const res = await axios.delete(`http://localhost:3000/api/donations/${id}`)
+        const res = await axios.delete(`http://localhost:3000/api/donations/${id}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
         console.log("Deleted", res.data);
         setDonations((prev) => prev.filter((d) => d._id !== id));
       } catch (error) {
@@ -69,6 +73,7 @@ const Donations = ({donations, setDonations}) => {
                 {donation.title}
               </h2>
               <p className="text-gray-600 text-sm">{donation.description}</p>
+              <p className="text-sm text-gray-700">{donation.quantity} Kg</p>
               <p className="text-gray-500 text-sm italic">
                 {donation.location}
               </p>

@@ -1,6 +1,7 @@
 import { FaPlus } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AddDonation = ({donations, setDonations}) => {
   const [addDonation, setAddDonation] = useState(false);
@@ -31,7 +32,7 @@ const AddDonation = ({donations, setDonations}) => {
 
     const { title, description,quantity, image, location, expiryDate } = formData;
     if (!title || !description || !quantity || !image || !location || !expiryDate) {
-      return setError("All fields are required");
+      return toast.warning("All fields are required");
     }
 
     try {
@@ -48,6 +49,18 @@ const AddDonation = ({donations, setDonations}) => {
 
       const token = localStorage.getItem("token");
 
+      const today = new Date();
+    const chosenDate = new Date(expiryDate);
+
+    // Remove the time part for accurate date-only comparison
+    today.setHours(0, 0, 0, 0);
+    chosenDate.setHours(0, 0, 0, 0);
+
+    if (chosenDate < today) {
+      toast.error("Expiry date cannot be in the past!");
+      return;
+    }
+
       const res = await axios.post("http://localhost:3000/api/donations/create", data, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,9 +71,10 @@ const AddDonation = ({donations, setDonations}) => {
       console.log("Donation created:", res.data);
       setAddDonation(false);
       setFormData({ title: "", description: "", quantity:"", image: null, location: "", expiryDate: "" });
-      
+      toast.success("Donation created")
     } catch (error) {
       console.log("Error posting:", error);
+      toast.error("Failed to create donation")
       setError(error.response?.data?.message || "Donation failed. Try again.");
     } finally {
       setIsLoading(false);

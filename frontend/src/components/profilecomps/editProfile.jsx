@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MdCancel } from "react-icons/md";
 import { Edit3, Mail, MapPin, Phone } from "lucide-react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
   const [formData, setFormData] = useState({
@@ -58,10 +59,10 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
       setUserProfile(res.data);
       localStorage.setItem("userData", JSON.stringify(res.data));
       setIsEditing(false);
-      alert("✅ Profile updated successfully!");
+      toast.success("✅ Profile updated successfully!");
     } catch (error) {
       console.error("Profile update failed:", error);
-      alert("❌ Update failed. Check console for details.");
+      toast.error("❌ Update failed. Check console for details.");
     }
   };
 

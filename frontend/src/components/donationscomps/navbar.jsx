@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Nav = ({username,userId}) => {
-  const[openProfile, setOpenProfile]= useState(false)
   const navigate = useNavigate()
 
   const handleProfile =()=>{
@@ -13,7 +13,7 @@ const Nav = ({username,userId}) => {
   const handleLogout = ()=>{
     localStorage.clear('userData')
     navigate('/login')
-    console.log('Logged out');
+    toast.success('Logged out');
   }
 
     return ( 

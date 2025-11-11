@@ -4,6 +4,15 @@ const Donations = require('../models/donation.model')
 //create new donation
 const createDonation = async (req, res) => {
   try {
+    const chosenDate = new Date(expiryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (chosenDate < today) {
+      return res
+        .status(400)
+        .json({ message: "Expiry date cannot be in the past" });
+    }
     const donation = await Donations.create({
       title: req.body.title,
       description: req.body.description,
@@ -17,7 +26,7 @@ const createDonation = async (req, res) => {
 
     res.status(201).json({ success: true, donation });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -35,7 +44,8 @@ const getMyDonations= async(req, res)=>{
 //get all donations
 const getDonations = async(req, res)=>{
 try {
-    const donations = await Donations.find()
+  const today = new Date()
+    const donations = await Donations.find({expiryDate:{ $gt: today}})
     res.status(200).json({donations})
 } catch (error) {
     res.status(400).json({error:error.message})
@@ -106,5 +116,7 @@ const deleteDonation = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+ 
 
 module.exports={createDonation, getDonations,getMyDonations, getOneDonation, updateDonation, deleteDonation}

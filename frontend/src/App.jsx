@@ -6,10 +6,12 @@ import { Route, Routes } from 'react-router-dom';
 import DonorDash from './pages/donorDashboard';
 import BeneficiaryDash from './pages/beneficiaryDashboard';
 import ProfilePage from './pages/profile';
-
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return ( 
+    <>
     <Routes>
       <Route path="/" element={<LandingPage/>}/>
       <Route path="/register" element={<Register/>}/>
@@ -18,6 +20,17 @@ const App = () => {
       <Route path='/beneficiary-dashboard' element={<BeneficiaryDash/>} />
       <Route path='profile' element={<ProfilePage/>} />
     </Routes>
+    <ToastContainer
+         position="top-right"
+         autoClose={3000}        // auto close after 3s
+         hideProgressBar={false}
+         newestOnTop={false}
+         closeOnClick
+         pauseOnHover
+         draggable
+         theme="colored"  
+    />
+    </>
    );
 }
  

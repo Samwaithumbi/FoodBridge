@@ -27,9 +27,11 @@
   p{
     @apply text-lg text-gray-900
   }
+  .card{
+    @apply w-[300px] md:w-[300px] h-[150px] flex flex-col justify-center items-center border border-green-400 bg-white text-black rounded-2xl shadow-md shadow-amber-200 transform transition-all duration-300 hover:scale-105 hover:shadow-lg
+  }
 
 }
-
 
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);

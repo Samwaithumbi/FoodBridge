@@ -1,14 +1,14 @@
 import { FaPlus } from "react-icons/fa6";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const AddDonation = ({donations, setDonations}) => {
+const AddDonation = () => {
   const [addDonation, setAddDonation] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    quantity:"",
+    quantity: "",
     image: "",
     location: "",
     expiryDate: "",
@@ -30,9 +30,22 @@ const AddDonation = ({donations, setDonations}) => {
     e.preventDefault();
     setError(false);
 
-    const { title, description,quantity, image, location, expiryDate } = formData;
+    const { title, description, quantity, image, location, expiryDate } = formData;
+
+    // Validate all fields
     if (!title || !description || !quantity || !image || !location || !expiryDate) {
       return toast.warning("All fields are required");
+    }
+
+    // Validate date BEFORE creating FormData
+    const today = new Date();
+    const chosenDate = new Date(expiryDate);
+    today.setHours(0, 0, 0, 0);
+    chosenDate.setHours(0, 0, 0, 0);
+
+    if (chosenDate < today) {
+      toast.error("Expiry date cannot be in the past!");
+      return; // Fixed: removed setIsLoading(false) here since it was never set to true yet
     }
 
     try {
@@ -49,33 +62,50 @@ const AddDonation = ({donations, setDonations}) => {
 
       const token = localStorage.getItem("token");
 
-      const today = new Date();
-    const chosenDate = new Date(expiryDate);
-
-    // Remove the time part for accurate date-only comparison
-    today.setHours(0, 0, 0, 0);
-    chosenDate.setHours(0, 0, 0, 0);
-
-    if (chosenDate < today) {
-      toast.error("Expiry date cannot be in the past!");
-      return;
-    }
-
-      const res = await axios.post("http://localhost:3000/api/donations/create", data, {
+      const res = await axios.post(
+        "http://localhost:3000/api/donations/create",
+        data,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            // Note: Don't set Content-Type manually with FormData
+            // Axios will set it automatically with the correct boundary
           },
-      });
+          timeout: 30000, // 30 second timeout
+        }
+      );
 
       console.log("Donation created:", res.data);
+      
+      // Reset form and close modal
+      setFormData({
+        title: "",
+        description: "",
+        quantity: "",
+        image: "",
+        location: "",
+        expiryDate: "",
+      });
       setAddDonation(false);
-      setFormData({ title: "", description: "", quantity:"", image: null, location: "", expiryDate: "" });
-      toast.success("Donation created")
+      toast.success("Donation created successfully!");
+
+      // Optional: Refresh the donations list if you have a callback
+      // if (onDonationCreated) onDonationCreated();
+
     } catch (error) {
-      console.log("Error posting:", error);
-      toast.error("Failed to create donation")
-      setError(error.response?.data?.message || "Donation failed. Try again.");
+      console.error("Error posting:", error);
+      
+      // Better error handling
+      let errorMessage = "Failed to create donation. Please try again.";
+      
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+        errorMessage = "Cannot connect to server. Please ensure the backend is running.";
+      } else if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage;
+      }
+      
+      toast.error(errorMessage);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -146,6 +176,7 @@ const AddDonation = ({donations, setDonations}) => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 outline-none resize-none"
                 ></textarea>
               </div>
+
               <div>
                 <label htmlFor="quantity" className="block font-medium mb-1">
                   Quantity
@@ -159,6 +190,7 @@ const AddDonation = ({donations, setDonations}) => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
+
               <div>
                 <label htmlFor="image" className="block font-medium mb-1">
                   Image
@@ -204,7 +236,7 @@ const AddDonation = ({donations, setDonations}) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition-all"
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Creating..." : "Add Donation"}
               </button>

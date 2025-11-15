@@ -26,21 +26,28 @@ const AvailableFood = () => {
   }, []);
 
   //requesting donation
-  const handleRequest=async(donationId)=>{
-    try {
-      const res=await axios.post("http://localhost:3000/api/donations/requests", {donationId}, {
-        headers:{
-          Authorization:`Bearer ${token}`,
-          'Content-Type':'application/json'
+    const handleRequest=async(donationId)=>{
+      try {
+        
+        const res=await axios.post("http://localhost:3000/api/beneficiary/requests", {donationId}, {
+          headers:{
+            Authorization:`Bearer ${token}`,
+            'Content-Type':'application/json'
+          }
+        } )
+        console.log("req successfully", res.data);
+        toast.success("✅Request was successfully")
+      } catch (error) {
+        if (error.response?.status === 400) {
+          toast.warning(error.response.data.message);
+        } else {
+          toast.error("Something went wrong. Try again.");
         }
-      } )
-      console.log("req successfully", res.data);
-      toast.success("✅Request was successfully")
-    } catch (error) {
-      console.error("Request failed:", error.response?.data || error.message);
-      toast.error("❌Request failed");
+      }
     }
-  }
+  
+ 
+ 
 
   
 

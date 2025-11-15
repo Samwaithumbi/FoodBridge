@@ -8,16 +8,17 @@ const cors = require("cors")
 dotenv.config()
 
 const app = express()
-const port = process.env.PORT || 3001
+const port = process.env.PORT 
 
 
 app.use(cors( {
- origin: "http://localhost:5173", // your React dev server
+ origin: "http://localhost:5173", 
 credentials: true,}))
+
 app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/donations', donationsRoutes)
-app.use('/api/donations', requestsRoutes)
+app.use('/api/beneficiary', requestsRoutes)
 
 
 

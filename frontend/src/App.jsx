@@ -8,6 +8,7 @@ import BeneficiaryDash from './pages/beneficiaryDashboard';
 import ProfilePage from './pages/profile';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import Admin from './pages/admin';
 
 const App = () => {
   return ( 
@@ -18,11 +19,12 @@ const App = () => {
       <Route path="/login" element={<Login/>} />
       <Route path='/donor-dashboard' element={<DonorDash/>} />
       <Route path='/beneficiary-dashboard' element={<BeneficiaryDash/>} />
-      <Route path='profile' element={<ProfilePage/>} />
+      <Route path='/profile' element={<ProfilePage/>} />
+      <Route path='/admin' element={<Admin/>}/>
     </Routes>
     <ToastContainer
          position="top-right"
-         autoClose={3000}        // auto close after 3s
+         autoClose={3000}        
          hideProgressBar={false}
          newestOnTop={false}
          closeOnClick

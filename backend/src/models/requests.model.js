@@ -11,6 +11,11 @@ const requestSchema =new mongoose.Schema({
     ref:"Donations",
     required:true
    },
+   donor:{
+   type:mongoose.Schema.Types.ObjectId,
+   ref:"donor",
+   required: true
+   },
    reqStatus:{
       type:String,
      enum: ["Pending", "Approved", "Rejected", "Delivered"],
@@ -20,7 +25,9 @@ const requestSchema =new mongoose.Schema({
       type: String,
       default:""
    }
-})
+},{timestamps: true})
+
+requestSchema.index({ donation: 1, beneficiary: 1 }, { unique: true });
 
 const Requests = mongoose.model("Requests", requestSchema)
 

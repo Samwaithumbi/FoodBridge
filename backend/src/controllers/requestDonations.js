@@ -18,9 +18,10 @@ const createRequest = async (req, res) => {
      return res.status(400).json({message:"You have already requested this donation."})
     }
     const newRequest = await Request.create({
+      donor:donation.donor,
       beneficiary: beneficiaryId,
       donation: donationId,
-      donor:donation.donor,
+      donation,
       message,
     });
 

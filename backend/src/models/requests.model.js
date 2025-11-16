@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const requestSchema =new mongoose.Schema({
+   donor:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Donations",
+      required: true
+      },
    beneficiary:{
       type:mongoose.Schema.Types.ObjectId,
       ref:"user",
@@ -10,11 +15,6 @@ const requestSchema =new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:"Donations",
     required:true
-   },
-   donor:{
-   type:mongoose.Schema.Types.ObjectId,
-   ref:"donor",
-   required: true
    },
    reqStatus:{
       type:String,

@@ -10,7 +10,6 @@ const AvailableFood = () => {
   useEffect(() => {
     const fetchAvailableDonations = async () => {
       let currentDate = new Date()
-      console.log(currentDate);
       try {
         const res = await axios.get(
           "http://localhost:3000/api/donations/all-donations"
@@ -28,8 +27,7 @@ const AvailableFood = () => {
   //requesting donation
     const handleRequest=async(donationId)=>{
       try {
-        
-        const res=await axios.post("http://localhost:3000/api/beneficiary/requests", {donationId}, {
+        const res=await axios.post("http://localhost:3000/api/beneficiary/requests", {donationId, reqStatus}, {
           headers:{
             Authorization:`Bearer ${token}`,
             'Content-Type':'application/json'
@@ -45,13 +43,7 @@ const AvailableFood = () => {
         }
       }
     }
-  
- 
- 
 
-  
-
- 
   return (
     <div className="px-6 py-8 bg-gray-50 min-h-screen">
       <div className="mb-6 text-center">

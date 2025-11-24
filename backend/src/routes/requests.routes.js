@@ -1,5 +1,5 @@
 const Router = require("express")
-const {createRequest, getPendingRequests, updateRequest} = require('../controllers/requestDonations')
+const {createRequest, getPendingRequests, updateRequest} = require('../controllers/requests.controller')
 const { protect } = require("../middleware/auth.middleware")
 
 const router=Router()

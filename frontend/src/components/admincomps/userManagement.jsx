@@ -4,13 +4,16 @@ import { MdDelete } from "react-icons/md";
 
 const AdminUsersTable = ({ users,setUsers }) => {
 
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjQ2NjFmMDVjY2Y3MDFjYzVlMGZkMiIsImlhdCI6MTc2Mzk5MzExOSwiZXhwIjoxNzY2NTg1MTE5fQ.VtBdfkRtbzaz_8ZaSEoUkjNQZnsVYToego7vwxcKozY";
+
+
     const handleDelete = async (id) => {
       try {
-        await axios.delete(`http://localhost:3000/api/auth/delete-user/${id}`);
+        await axios.delete(`http://localhost:3000/api/admin/users/${id}`,{
+          headers:{Authorization:`Bearer ${token}`}
+        });
         console.log("Deleted user:", id);
-  
         setUsers(prev => prev.filter(user => user._id !== id));
-  
       } catch (error) {
         console.log("Failed to delete:", error);
       }
@@ -45,6 +48,7 @@ const AdminUsersTable = ({ users,setUsers }) => {
               <th className="p-3 border">Name</th>
               <th className="p-3 border">Email</th>
               <th className="p-3 border">Role</th>
+              <th className="p-3 border">Status</th>
               <th className="p-3 border">Location</th>
               <th className="p-3 border">Donations</th>
               <th className="p-3 border">Join Date</th>
@@ -59,6 +63,7 @@ const AdminUsersTable = ({ users,setUsers }) => {
                   <td className="p-3 border">{user.name}</td>
                   <td className="p-3 border">{user.email}</td>
                   <td className="p-3 border">{user.role}</td>
+                  <td className="p-3 border">{user.isActive}</td>
                   <td className="p-3 border">{user.location || "N/A"}</td>
                   <td className="p-3 border">{user.donations?.length || 0}</td>
                   <td className="p-3 border">

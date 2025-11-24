@@ -12,7 +12,7 @@ const AvailableFood = ({reqStatus, setReqStatus}) => {
       let currentDate = new Date()
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/donations/available-donations"
+          "http://localhost:3000/api/donations/available"
         );
         setAvailableDonations(res.data.donations);
       } catch (error) {

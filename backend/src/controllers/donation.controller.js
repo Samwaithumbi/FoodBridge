@@ -1,5 +1,5 @@
 const Donations = require("../models/donation.model");
-
+const mongoose = require("mongoose");
 // Create new donation
 const createDonation = async (req, res) => {
   try {
@@ -103,17 +103,32 @@ const getAvailableDonations = async (req, res) => {
 // Get donation by id
 const getOneDonation = async (req, res) => {
   try {
+
+    // 1. Validate ID
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid donation ID" });
+    }
+
+    // 2. Fetch donation
     const donation = await Donations.findById(req.params.id);
 
-    if (!donation) return res.status(404).json({ message: "Donation not found" });
+    if (!donation) {
+      return res.status(404).json({ message: "Donation not found" });
+    }
 
-    if (donation.donor.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    // 3. Authorization check
+    if (
+      donation.donor.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
       return res.status(403).json({ message: "Access denied" });
     }
 
     res.status(200).json({ donation });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("getOneDonation ERROR:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 

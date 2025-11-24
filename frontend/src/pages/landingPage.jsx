@@ -4,7 +4,7 @@ import NavBar from "../components/langingpageComps/navbar";
 
 const LandingPage = () => {
     return ( 
-        <div className="m-3">
+        <div>
             <NavBar/>
             <Hero/>
             <Footer/>

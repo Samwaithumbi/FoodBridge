@@ -4,7 +4,7 @@ const Donation = require("../models/donation.model")
 //beneficiary requesting donation
 const createRequest = async (req, res) => {
   try {
-    const { donationId, message } = req.body;
+    const { donationId,reqStatus, message } = req.body;
     const beneficiaryId = req.user._id;
 
     const donation = await Donation.findById(donationId);
@@ -23,6 +23,7 @@ const createRequest = async (req, res) => {
       donation: donationId,
       donation,
       message,
+      reqStatus
     });
 
     res.status(201).json(newRequest);
@@ -44,5 +45,33 @@ const getPendingRequests = async(req, res)=>{
     res.status(500).json(error.message)
   }
 }
+//updating request
+const updateRequest = async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    const { reqStatus } = req.body;
 
-   module.exports={createRequest, getPendingRequests}
+    if (!reqStatus) {
+      return res.status(400).json({ message: "reqStatus is required" });
+    }
+
+    const updatedRequest = await Request.findByIdAndUpdate(
+      requestId,
+      { reqStatus },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json({ message: "Updated", updatedRequest });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+   module.exports={createRequest, getPendingRequests, updateRequest}

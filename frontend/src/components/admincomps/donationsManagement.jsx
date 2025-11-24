@@ -1,11 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { LuEye } from "react-icons/lu";
+import { TiTick } from "react-icons/ti";
+import { MdCancel } from "react-icons/md";
+import { RiDeleteBin6Fill } from "react-icons/ri";
+import ViewRequest from "./viewRequest";
 
 const DonationManagement = ({ requests }) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTg5MzRlZjMyNmI5NjBiYTg4MzBmYiIsImlhdCI6MTc2MzIxODI4NiwiZXhwIjoxNzY1ODEwMjg2fQ.ilTxHI8_FOBS-I3tGdkTJINuVPMsViQqXpbLUmRdMKI";
-
+  const [view, setView]= useState(false)
   const [enrichedRequests, setEnrichedRequests] = useState([]);
+  const [selectedRequest, setSelectedRequest] = useState(null)
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTg5MzRlZjMyNmI5NjBiYTg4MzBmYiIsImlhdCI6MTc2MzIxODI4NiwiZXhwIjoxNzY1ODEwMjg2fQ.ilTxHI8_FOBS-I3tGdkTJINuVPMsViQqXpbLUmRdMKI";
 
   useEffect(() => {
     if (!requests || requests.length === 0) return;
@@ -54,10 +59,24 @@ const DonationManagement = ({ requests }) => {
     enrich();
   }, [requests]);
 
+  const updateRequestStatus = async (id, status) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/api/requests/update/${id}`,
+        { reqStatus: status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log("Updated:", res.data);
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
+  
+
   return (
     <>
       <div className="p-6 bg-white rounded-xl shadow">
-        <h1>User Management</h1>
+        <h1>Donation Management</h1>
 
         {/* Top Bar */}
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
@@ -114,7 +133,7 @@ const DonationManagement = ({ requests }) => {
                       {request.message || "No message"}
                     </td>
 
-                    <td className="p-3 border">{request.status}</td>
+                    <td className="p-3 border">{request.reqStatus}</td>
 
                     <td className="p-3 border">
                       {new Date(request.createdAt).toLocaleDateString()}
@@ -122,14 +141,19 @@ const DonationManagement = ({ requests }) => {
 
                     <td className="p-3 border">
                       <div className="flex gap-2 justify-center">
-                        <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
-                          View
+                        <button
+                         onClick={()=>{
+                          setView(true)
+                          setSelectedRequest(request)
+                         }}
+                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+                         <LuEye/>
                         </button>
                         <button className="px-3 py-1 text-sm bg-yellow-500 text-white rounded">
-                          Edit
+                          <TiTick/>
                         </button>
                         <button className="px-3 py-1 text-sm bg-red-500 text-white rounded">
-                          Delete
+                          <MdCancel/>
                         </button>
                       </div>
                     </td>
@@ -146,6 +170,14 @@ const DonationManagement = ({ requests }) => {
           </table>
         </div>
       </div>
+
+      {view && selectedRequest && (
+        <ViewRequest 
+        selectedRequest={selectedRequest} 
+        setView={setView} 
+        updateRequestStatus={updateRequestStatus}/>
+       )}
+
     </>
   );
 };

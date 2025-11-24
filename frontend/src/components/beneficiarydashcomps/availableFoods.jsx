@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const AvailableFood = () => {
+const AvailableFood = ({reqStatus, setReqStatus}) => {
   const [availableDonations, setAvailableDonations] = useState([]);
   const token =localStorage.getItem('token')
 
-  //fetching donations
+  //fetching available donations
   useEffect(() => {
     const fetchAvailableDonations = async () => {
       let currentDate = new Date()
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/donations/all-donations"
+          "http://localhost:3000/api/donations/available-donations"
         );
         setAvailableDonations(res.data.donations);
       } catch (error) {
@@ -26,8 +26,9 @@ const AvailableFood = () => {
 
   //requesting donation
     const handleRequest=async(donationId)=>{
+      setReqStatus("Pending")
       try {
-        const res=await axios.post("http://localhost:3000/api/beneficiary/requests", {donationId, reqStatus}, {
+        const res=await axios.post("http://localhost:3000/api/requests/create", {donationId, reqStatus}, {
           headers:{
             Authorization:`Bearer ${token}`,
             'Content-Type':'application/json'

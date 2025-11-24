@@ -26,7 +26,7 @@ const donationSchema = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum: ["available", "claimed", "expired"],
+        enum: ["available", "claimed","completed", "expired"],
         default: "available"
       },
       donor: {
@@ -35,6 +35,10 @@ const donationSchema = new mongoose.Schema({
         required: true
       }
 }, {timestamps: true})
+
+donationSchema.index({ expiryDate: 1 });
+donationSchema.index({ status: 1 });
+
 
 const Donations = mongoose.model('Donations', donationSchema)
 

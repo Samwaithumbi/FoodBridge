@@ -4,7 +4,6 @@ const Hero = () => {
     return ( 
       <div>
         <div className="mt-20 flex flex-col md:flex-row items-center justify-between gap-10 px-6 md:px-16">
-        {/* Text Section */}
         <div className="max-w-xl text-center md:text-left">
           <h1 className="text-3xl md:text-5xl font-extrabold  leading-tight">
             Together, We Can End Food Waste and Hunger
@@ -17,7 +16,7 @@ const Hero = () => {
              <Link to="/register" >Donate</Link>
             </button>
             <button className="cursor-pointer bg-amber-900 hover:bg-amber-700 text-white px-6 py-2 rounded-lg text-lg font-semibold shadow-md transition">
-              Find Food
+             <Link to="/login" >Find Food</Link>
             </button>
           </div>
         </div>
@@ -40,21 +39,21 @@ const Hero = () => {
   <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
     {/* Step 1 */}
     <div className="p-8 border border-amber-950 rounded-2xl shadow-green-800 hover:scale-105 transition-transform duration-300">
-      <span className="text-amber-300 text-lg font-semibold">Step 01</span>
+      <span className="text-amber-900 text-lg font-semibold">Step 01</span>
       <h2 className="text-2xl font-semibold text-black mt-2">Post Food</h2>
       <p className="text-lg text-black mt-2">
         List your surplus food with photos, location, and pickup details in minutes.
       </p>
     </div>
     <div className="p-8 border border-amber-950 rounded-2xl shadow-green-800 hover:scale-105 transition-transform duration-300">
-      <span className="text-amber-300 text-lg font-semibold">Step 02</span>
+      <span className="text-amber-900 text-lg font-semibold">Step 02</span>
       <h2 className="text-2xl font-semibold text-black mt-2">Connect</h2>
       <p className="text-lg text-black mt-2">
       Families and centers browse available donations in their neighborhood
       </p>
     </div>
     <div className="p-8 border border-amber-950 rounded-2xl shadow-green-800 hover:scale-105 transition-transform duration-300">
-      <span className="text-amber-300 text-lg font-semibold">Step 03</span>
+      <span className="text-amber-900 text-lg font-semibold">Step 03</span>
       <h2 className="text-2xl font-semibold text-black mt-2">Share</h2>
       <p className="text-lg text-black mt-2">
       Coordinate pickup times and bring fresh food home to enjoy!
@@ -82,9 +81,9 @@ const Hero = () => {
 
       <div className="flex items-center gap-4 mt-6">
         <img
-          src="src/assets/hero.png"
+          src="/hero.png"
           alt="donor image"
-          className="w-16 h-16 rounded-full object-cover border-4 border-amber-500"
+          className="w-16 h-16 rounded-full"
         />
         <div>
           <h2 className="text-xl font-semibold text-gray-900">Sarah Johnson</h2>
@@ -103,9 +102,9 @@ const Hero = () => {
 
       <div className="flex items-center gap-4 mt-6">
         <img
-          src="src/assets/hero.png"
+          src="/hero.png"
           alt="beneficiary image"
-          className="w-16 h-16 rounded-full object-cover border-4 border-green-500"
+          className="w-16 h-16 rounded-full "
         />
         <div>
           <h2 className="text-xl font-semibold text-gray-900">James Otieno</h2>

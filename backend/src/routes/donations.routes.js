@@ -2,7 +2,8 @@ const Router = require('express')
 const upload = require('../config/multer')
 const {getMyDonations, createDonation,  updateDonation, deleteDonation, getOneDonation, requestDonation, getAllDonations, getAvailableDonations} = require('../controllers/donation.controller')
 const router = Router()
-const { protect, authorize } = require("../middleware/auth.middleware");
+const { protect} = require("../middleware/auth.middleware");
+const {authorize} = require('../middleware/role.middleware')
 
 
 

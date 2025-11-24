@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect } from "react";
+import { LuUsers } from "react-icons/lu";
 
 const Analytics = ({users, setUsers, allDonations, setAllDonations, availableDonations, setAvailableDonations, requests, setRequests}) => {
    const token = localStorage.getItem('token')
@@ -47,7 +48,7 @@ useEffect(()=>{
  useEffect(()=>{
   async function fetchingPendingRequests(){
      try {
-       const res =await axios.get("http://localhost:3000/api/beneficiary/pending-requests", {
+       const res =await axios.get("http://localhost:3000/api/requests/pending-requests", {
         headers:{
           Authorization:`Bearer ${token}`
         }
@@ -64,9 +65,12 @@ useEffect(()=>{
     return ( 
         <>
           <div className="grid md:grid-cols-4 gap-4 justify-center mt-4">
-            <div className="card">
+            <div className="card ">
+             <div>
+                 <LuUsers size={50} className="bg-blue-500 p-2 rounded-lg"/>
                 <h2>{users.length}</h2>
                 <p>Total Users</p>
+             </div>
             </div>
             <div className="card">
                 <h2>{allDonations.length}</h2>

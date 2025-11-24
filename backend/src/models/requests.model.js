@@ -24,6 +24,10 @@ const requestSchema =new mongoose.Schema({
    message:{
       type: String,
       default:""
+   },
+   createdAt:{
+      type: Date,
+      default: Date.now
    }
 },{timestamps: true})
 

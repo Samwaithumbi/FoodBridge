@@ -23,7 +23,7 @@ const NavBar = () => {
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex space-x-8 font-medium text-gray-700">
-          <a href="/home" className="hover:text-amber-500 transition">Home</a>
+          <a href="/" className="hover:text-amber-500 transition">Home</a>
           <a href="/how-it-works" className="hover:text-amber-500 transition">How it Works</a>
           <a href="/find-food" className="hover:text-amber-500 transition">Find Food</a>
           <a href="/donate" className="hover:text-amber-500 transition">Donate</a>
@@ -32,7 +32,7 @@ const NavBar = () => {
 
       {/* Mobile Menu */}
       {menuBar && (
-        <div className="md:hidden bg-amber-400 text-black w-full py-6 px-8 transition-all duration-300 ease-in-out">
+        <div className="md:hidden bg-gray-900 text-white w-full py-6 px-8 transition-all duration-300 ease-in-out">
           <nav>
             <ul className="flex flex-col space-y-4 text-lg font-semibold">
               <li>

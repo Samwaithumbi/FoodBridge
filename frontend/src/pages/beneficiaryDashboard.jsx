@@ -3,9 +3,10 @@ import { AppSidebar } from "@/components/app-sidebar"
 import AvailableFood from "@/components/beneficiarydashcomps/availableFoods";
 import Nav from "@/components/donationscomps/navbar";
 import BeneficiaryStats from "@/components/beneficiarydashcomps/statsStatus";
+import { useState } from "react";
 
 const BeneficiaryDash  = () => {
-   
+   const [reqStatus, setReqStatus] = useState("")
     return ( 
         <>
          <SidebarProvider>
@@ -16,7 +17,7 @@ const BeneficiaryDash  = () => {
                   <Nav />
                 </div>
                 <div className="mt-13">
-                 <AvailableFood/>
+                 <AvailableFood reqStatus={reqStatus} setReqStatus={setReqStatus} />
                  <BeneficiaryStats/>
                 </div>
                

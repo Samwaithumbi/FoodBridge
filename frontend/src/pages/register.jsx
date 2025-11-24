@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,18 +15,14 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setIsLoading] = useState(false);
 
-
-  // ✅ Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Basic validation
     if (
       !formData.name || 
       !formData.email || 
@@ -46,7 +43,7 @@ const Register = () => {
 
       
       if (res.status === 201 || res.data.success) {
-        alert("Registration successful!");
+        toast.success("Registered successfully")
         navigate("/login");
       }
     } catch (err) {

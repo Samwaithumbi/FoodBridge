@@ -1,11 +1,11 @@
 const User = require('../models/auth.model')
 
 //user profile
-const myProfile = (req, res)=>{
+const myProfile = (req, res, next)=>{
     try {
         res.json(req.user)
     } catch (error) {
-        res.json({mssg:"Failed to fetch user data"})
+        next(error)
     }
 
 }

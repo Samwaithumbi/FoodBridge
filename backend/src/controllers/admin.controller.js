@@ -35,6 +35,23 @@ const Donation = require('../models/donation.model')
       next(err)
     }
   };
+  
+  //update user
+  const updateUserDetails =async (req, res, next)=>{
+    try {
+      const {name,email,role,phone,location}= req.body
+      
+      const updateUser = await User.findByIdAndUpdate(
+        req.params.id,
+        { name, email, phone, location, role},
+        { new: true }
+      );
+  
+      res.status(200).json(updateUser);
+    } catch (error) {
+      next(error)
+    }
+  }
 
   //delete user
   const deleteUser = async (req, res, next) => {
@@ -114,6 +131,7 @@ const Donation = require('../models/donation.model')
   module.exports = {
     getUsers,
     getSingleUserById,
+  updateUserDetails,
     deleteUser,
     getDonationsAdmin,
     deleteDonationAdmin,

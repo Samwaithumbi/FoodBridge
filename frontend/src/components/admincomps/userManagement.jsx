@@ -1,12 +1,27 @@
 import axios from "axios";
+import { useState } from "react";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
+import ViewUser from "./viewUser";
 
-const AdminUsersTable = ({ users,setUsers }) => {
+const AdminUsersTable = ({ users,setUsers, token }) => {
 
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjQ2NjFmMDVjY2Y3MDFjYzVlMGZkMiIsImlhdCI6MTc2Mzk5MzExOSwiZXhwIjoxNzY2NTg1MTE5fQ.VtBdfkRtbzaz_8ZaSEoUkjNQZnsVYToego7vwxcKozY";
+  const [userDetails, setUserDetails]= useState("")
+  const [viewUser, setViewUser]= useState(false)
 
+  //viewing a user info
+  const handleUser =async(id)=>{
+    try {
+      const res = await axios.get(`http://localhost:3000/api/admin/users/${id}`,{
+        headers:{Authorization:`Bearer ${token}`}
+      })
+      setUserDetails(res.data);
+    } catch (error) {
+      console.log("Failed to fetch user info");
+    }
+  }
 
+  // deleting a user
     const handleDelete = async (id) => {
       try {
         await axios.delete(`http://localhost:3000/api/admin/users/${id}`,{
@@ -21,6 +36,7 @@ const AdminUsersTable = ({ users,setUsers }) => {
   
 
   return (
+    <>
     <div className="p-6 bg-white rounded-xl shadow">
       <h1>User Management</h1>
 
@@ -73,7 +89,11 @@ const AdminUsersTable = ({ users,setUsers }) => {
                   {/* Action buttons */}
                   <td className="p-3 border">
                     <div className="flex gap-2 justify-center">
-                      <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+                      <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                       onClick={()=>{
+                        handleUser(user._id);
+                         setViewUser(true)}}
+                      >
                         <LuEye />
                       </button>
 
@@ -98,6 +118,11 @@ const AdminUsersTable = ({ users,setUsers }) => {
         </table>
       </div>
     </div>
+
+    {viewUser&&(
+      <ViewUser setViewUser={setViewUser} userDetails={userDetails} token={token} setUserDetails={setUserDetails} handleDelete={handleDelete}/>
+    )}
+    </>
   );
 };
 

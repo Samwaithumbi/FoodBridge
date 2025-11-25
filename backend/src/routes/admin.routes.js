@@ -1,5 +1,5 @@
 const Router = require('express')
-const { getUsers,getSingleUserById, deleteUser, getDonationsAdmin, approveDonation, rejectDonation, deleteDonationAdmin } = require('../controllers/admin.controller')
+const { getUsers,getSingleUserById, deleteUser, getDonationsAdmin, approveDonation, rejectDonation, deleteDonationAdmin, updateUserDetails } = require('../controllers/admin.controller')
 const { protect } = require('../middleware/auth.middleware')
 const {authorize} =require('../middleware/role.middleware')
 const router = Router()
@@ -8,6 +8,7 @@ router.use(protect, authorize("admin"))
 
 router.get('/users', getUsers)
 router.get('/users/:id', getSingleUserById)
+router.patch('/users/:id', updateUserDetails)
 router.delete('/users/:id', deleteUser)
 
 router.get('/donations', getDonationsAdmin)

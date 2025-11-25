@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import Analytics from "@/components/admincomps/analytics";
-import AdminNavBar from "../components/admincomps/adminNavBar"
 import AdminUsersTable from "../components/admincomps/userManagement"
-import DonationManagement from "@/components/admincomps/donationsManagement";
 import axios from "axios";
 
 const Admin = () => {
@@ -11,8 +9,7 @@ const Admin = () => {
     const [availableDonations, setAvailableDonations]= useState([])
     const [requests, setRequests]= useState([])
     const [adminNav, setAdminNav] = useState("")
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjQ2NjFmMDVjY2Y3MDFjYzVlMGZkMiIsImlhdCI6MTc2Mzk5MzExOSwiZXhwIjoxNzY2NTg1MTE5fQ.VtBdfkRtbzaz_8ZaSEoUkjNQZnsVYToego7vwxcKozY";
-
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjVhNjQxNmY4YjY2NzdjY2EyZjI2OSIsImlhdCI6MTc2NDA3NTEwOSwiZXhwIjoxNzY2NjY3MTA5fQ.xOBdRvTR4zPtzW7BxVE8lC2zNYhfbSYfMAFykI00AGU"
 
     useEffect(()=>{
        async function fetchDetails(){
@@ -47,23 +44,9 @@ const Admin = () => {
             <p>Managing FoodBridge  platform and users</p>
          </div>
            <div>
-            <Analytics users={users} setUsers={setUsers}
-              allDonations={allDonations} setAllDonations={setAllDonations}
-              availableDonations={availableDonations} setAvailableDonations={setAvailableDonations}
-              requests={requests} setRequests={setRequests}
-
-              />
-              <AdminNavBar adminNav={adminNav} setAdminNav={setAdminNav}  />
-
-              {adminNav === "users" ?(
-                 <AdminUsersTable adminNav={adminNav} setAdminNav={setAdminNav} users={users} setUsers={setUsers}/>
-              ): (
-               <DonationManagement 
-               adminNav={adminNav} setAdminNav={setAdminNav} 
-                requests={requests}
-               />
-              )}
-             
+            <Analytics users={users} allDonations={allDonations} availableDonations={availableDonations} requests={requests}/>
+     
+             <AdminUsersTable adminNav={adminNav} token={token} setAdminNav={setAdminNav} users={users} setUsers={setUsers}/>
            </div>
          </div>
         </>

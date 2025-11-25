@@ -1,15 +1,7 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { LuUsers } from "react-icons/lu";
 
-const Analytics = ({
-  users,
-  allDonations,
-  availableDonations,
-  requests
-}) => {
-
-
+const Analytics = ({users, allDonations,availableDonations, requests}) => {
+  
   return (
     <>
       <div className="grid md:grid-cols-4 gap-4 justify-center mt-4">

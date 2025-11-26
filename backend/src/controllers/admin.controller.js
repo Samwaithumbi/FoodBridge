@@ -86,6 +86,20 @@ const Donation = require('../models/donation.model')
       next(err);
     }
   };
+  //get donation by id
+  const getDonationById= async (req, res, next) => {
+    try {
+      const donation = await Donation.findById(req.params.id);
+  
+      if (!donation) {
+        return res.status(404).json({ message: "Donation not found" });
+      }
+  
+      res.status(200).json(donation);
+    } catch (error) {
+      next(err)
+    }
+  };
   
   //delete donation
   const deleteDonationAdmin = async (req, res, next) => {
@@ -101,26 +115,30 @@ const Donation = require('../models/donation.model')
   };
   
   //approve donation
-    const approveDonation= async (req, res, next)=>{
-      try {
-        const donation = await Donation.findById(req.params.id);
-        if (!donation) return res.status(404).json({ message: "Donation not found" });
-    
-        donation.status = "available";
-        await donation.save();
-        res.json({ message: "Donation approved", donation });
-      } catch (err) {
-        next(err);
-      }
+  const approveDonation = async (req, res, next) => {
+    try {
+      const donation = await Donation.findById(req.params.id);
+      if (!donation) return res.status(404).json({ message: "Donation not found" });
+  
+      // Update the correct field
+      donation.donationStatus = "Available"; 
+      await donation.save();
+  
+      res.status(200).json({ message: "Donation approved", donation });
+    } catch (err) {
+      console.error("Approve donation error:", err); // <-- log the error
+      res.status(500).json({ message: "Internal server error", error: err.message });
     }
+  };
+  
 
-//
+//reject donation
     const rejectDonation= async (req, res, next)=>{
       try {
         const donation = await Donation.findById(req.params.id);
         if (!donation) return res.status(404).json({ message: "Donation not found" });
     
-        donation.status = "expired";
+        donation.donationStatus = "rejected";
         await donation.save();
         res.json({ message: "Donation rejected", donation });
       } catch (err) {
@@ -134,6 +152,7 @@ const Donation = require('../models/donation.model')
   updateUserDetails,
     deleteUser,
     getDonationsAdmin,
+    getDonationById,
     deleteDonationAdmin,
     approveDonation,
     rejectDonation

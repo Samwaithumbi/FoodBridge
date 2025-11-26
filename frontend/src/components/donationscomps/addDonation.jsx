@@ -12,6 +12,7 @@ const AddDonation = () => {
     image: "",
     location: "",
     expiryDate: "",
+    donationStatus:"pending"
   });
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,7 @@ const AddDonation = () => {
     e.preventDefault();
     setError(false);
 
-    const { title, description, quantity, image, location, expiryDate } = formData;
+    const { title, description, quantity, image, location, expiryDate,donationStatus } = formData;
 
     // Validate all fields
     if (!title || !description || !quantity || !image || !location || !expiryDate) {

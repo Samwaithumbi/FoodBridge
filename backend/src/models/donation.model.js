@@ -24,10 +24,10 @@ const donationSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Please the quantity of donation"]
       },
-      status: {
+      donationStatus: {
         type: String,
-        enum: ["available", "claimed","completed", "expired"],
-        default: "available"
+        enum: ["Pending","Available", "Claimed","Rejected","Completed", "Expired"],
+        default: "Pending"
       },
       donor: {
         type: mongoose.Schema.Types.ObjectId,

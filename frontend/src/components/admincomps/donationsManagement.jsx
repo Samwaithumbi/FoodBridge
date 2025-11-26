@@ -1,158 +1,136 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { LuEye } from "react-icons/lu";
-import { TiTick } from "react-icons/ti";
-import { MdCancel } from "react-icons/md";
-import ViewRequest from "./viewRequest";
+import { MdDelete } from "react-icons/md";
+import { useState } from "react";
+import axios from "axios";
+import ViewDonation from "./viewDonation";
 
-const DonationManagement = ({ requests }) => {
-  const [view, setView] = useState(false);
-  const [enrichedRequests, setEnrichedRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
+const DonationManagement = ({ allDonations, token , refreshDonations}) => {
+  const [viewDonation, setViewDonation] = useState(false);
+  const [donationDetails, setDonationDetails] = useState({});
 
-  const token ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjQ2NjFmMDVjY2Y3MDFjYzVlMGZkMiIsImlhdCI6MTc2Mzk5MzExOSwiZXhwIjoxNzY2NTg1MTE5fQ.VtBdfkRtbzaz_8ZaSEoUkjNQZnsVYToego7vwxcKozY"
-
-  useEffect(() => {
-    if (!requests || requests.length === 0) return;
-
-    async function enrichRequests() {
-      try {
-        const enriched = await Promise.all(
-          requests.map(async (req) => {
-            try {
-              // 🔹 Get Donation
-              const donationRes = await axios.get(
-                `http://localhost:3000/api/donations/${req.donation}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-
-              const donationData = donationRes.data?.donation || donationRes.data;
-
-              // 🔹 Get Donor
-              const donorRes = await axios.get(
-                `http://localhost:3000/api/admin/users/${req.donor}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-
-              const donorData = donorRes.data?.user || donorRes.data;
-
-              // 🔹 Get Beneficiary
-              const beneficiaryRes = await axios.get(
-                `http://localhost:3000/api/admin/users/${req.beneficiary}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-
-              const beneficiaryData =
-                beneficiaryRes.data?.user || beneficiaryRes.data;
-
-              return {
-                ...req,
-                donationDetails: donationData || {},
-                donorDetails: donorData || {},
-                beneficiaryDetails: beneficiaryData || {},
-              };
-            } catch (err) {
-              console.log(`❌ Error enriching request ${req._id}:`, err.message);
-              return {
-                ...req,
-                donationDetails: null,
-                donorDetails: null,
-                beneficiaryDetails: null,
-              };
-            }
-          })
-        );
-
-        setEnrichedRequests(enriched);
-      } catch (error) {
-        console.log("❌ Error enriching requests:", error);
-      }
-    }
-
-    enrichRequests();
-  }, [requests]);
-
-  // 🔹 Update Request Status
-  const updateRequestStatus = async (id, status) => {
+  const handleViewDonation = async (id) => {
     try {
-      const res = await axios.put(
-        `http://localhost:3000/api/requests/update/${id}`,
-        { reqStatus: status },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const res = await axios.get(
+        `http://localhost:3000/api/admin/donations/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-
-      console.log("Updated:", res.data);
-
-      // Update UI instantly
-      setEnrichedRequests((prev) =>
-        prev.map((r) =>
-          r._id === id ? { ...r, reqStatus: status } : r
-        )
-      );
+     console.log(res.data);
+      setDonationDetails(res.data);
+      setViewDonation(true); // open modal AFTER data loads
     } catch (error) {
-      console.error("❌ Update failed:", error.message);
+      console.log("Failed to fetch donation info", error);
     }
   };
 
+ //deleting  donation
+ const handleDelete = async (id) => {
+  try {
+    await axios.delete(`http://localhost:3000/api/admin/donations/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (typeof refreshDonations === "function") await refreshDonations();
+    setViewDonation(false);
+  } catch (err) {
+    console.error("Delete failed", err);
+  }
+};
+
+
   return (
     <>
-      <div className="p-3">
-        <h2 className="text-lg font-bold mb-3">Donation Requests</h2>
+      <div className="p-6 bg-white rounded-xl shadow">
+        <h1>Donation Management</h1>
 
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border">
+        {/* Top Bar */}
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search donations..."
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
+          />
+
+          <select className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-40">
+            <option>All Roles</option>
+            <option>Admin</option>
+            <option>Donor</option>
+            <option>Recipient</option>
+          </select>
+        </div>
+
+        {/* Table */}
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-max w-full border-collapse">
             <thead>
-              <tr className="bg-gray-200">
-                <th>Donation</th>
-                <th>Donor</th>
-                <th>Beneficiary</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
+                <th className="p-3 border">Donor</th>
+                <th className="p-3 border">Item Name</th>
+                <th className="p-3 border">Status</th>
+                <th className="p-3 border">Location</th>
+                <th className="p-3 border">Quantity</th>
+                <th className="p-3 border">Expiry</th>
+                <th className="p-3 border text-center">Actions</th>
               </tr>
             </thead>
 
-            <tbody>
-              {enrichedRequests.map((req) => (
-                <tr key={req._id} className="border-b">
-                  <td>{req?.donationDetails?.title || "Unknown"}</td>
-                  <td>{req?.donorDetails?.username || "Unknown"}</td>
-                  <td>{req?.beneficiaryDetails?.username || "Unknown"}</td>
-                  <td className="font-semibold">{req.reqStatus}</td>
-                  <td className="flex gap-3 py-2">
-                    <LuEye
-                      size={22}
-                      className="cursor-pointer text-blue-600"
-                      onClick={() => {
-                        setSelectedRequest(req);
-                        setView(true);
-                      }}
-                    />
+            <tbody className="text-gray-700">
+              {allDonations && allDonations.length > 0 ? (
+                allDonations.map((donation) => (
+                  <tr key={donation._id} className="border-b hover:bg-gray-50">
+                    <td className="p-3 border">
+                      {donation.donor?.name || "unknown"}
+                    </td>
+                    <td className="p-3 border">{donation.title}</td>
+                    <td className="p-3 border">{donation.donationStatus}</td>
+                    <td className="p-3 border">{donation.location || "N/A"}</td>
+                    <td className="p-3 border">{donation.quantity || 0}</td>
+                    <td className="p-3 border">
+                      {new Date(donation.expiryDate).toLocaleDateString()}
+                    </td>
 
-                    <TiTick
-                      size={22}
-                      className="text-green-600 cursor-pointer"
-                      onClick={() => updateRequestStatus(req._id, "approved")}
-                    />
+                    {/* Action Buttons */}
+                    <td className="p-3 border">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                          onClick={() => handleViewDonation(donation._id)}
+                        >
+                          <LuEye />
+                        </button>
 
-                    <MdCancel
-                      size={22}
-                      className="text-red-600 cursor-pointer"
-                      onClick={() => updateRequestStatus(req._id, "rejected")}
-                    />
+                        <button
+                          onClick={() => handleDelete(donation._id)}
+                          className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+                        >
+                          <MdDelete />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center p-4 text-gray-500">
+                    No donations found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-
-        {view && selectedRequest && (
-          <ViewRequest
-            request={selectedRequest}
-            setView={setView}
-          />
-        )}
       </div>
+
+      {/* View Donation Modal */}
+      {viewDonation && (
+       <ViewDonation
+        setViewDonation={setViewDonation}
+        donationDetails={donationDetails}
+        token={token}
+        refreshDonations={refreshDonations}
+      />
+     
+      )}
     </>
   );
 };

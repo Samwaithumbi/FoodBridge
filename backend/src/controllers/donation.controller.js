@@ -3,12 +3,7 @@ const mongoose = require("mongoose");
 // Create new donation
 const createDonation = async (req, res) => {
   try {
-    console.log("📝 === CREATE DONATION START ===");
-    console.log("User:", req.user?._id);
-    console.log("Body:", req.body);
-    console.log("File:", req.file);
-
-    const { title, description, location, expiryDate, quantity, image } = req.body;
+    const { title, description, location, expiryDate, quantity, image,donationStatus } = req.body;
 
     // 1. Validate required fields
     if (!title || !description || !location || !expiryDate || !quantity) {
@@ -53,6 +48,7 @@ const createDonation = async (req, res) => {
       quantity,
       donor: req.user._id,
       image: req.file?.path || image || null,
+      donationStatus
     });
 
     console.log("✅ Donation created successfully!");
@@ -79,10 +75,10 @@ const getMyDonations = async (req, res) => {
   }
 };
 
-// Get all donations
+// Get available donations for beneficiary to view
 const getAllDonations = async (req, res) => {
   try {
-    const donations = await Donations.find();
+    const donations = await Donations.find({donationStatus:"Available"});
     res.status(200).json({ donations });
   } catch (error) {
     res.status(400).json({ error: error.message });

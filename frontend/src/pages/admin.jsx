@@ -3,6 +3,7 @@ import Analytics from "@/components/admincomps/analytics";
 import AdminUsersTable from "@/components/admincomps/userManagement";
 import axios from "axios";
 import DonationManagement from "@/components/admincomps/donationsManagement";
+import RequestManagement from "@/components/admincomps/requestManagement";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -36,6 +37,7 @@ const Admin = () => {
           setAllDonations(donationRes.data.donations);
           setAvailableDonations(availableDonationRes.data.donations);
           setRequests(requestsRes.data);
+          console.log(requestsRes.data);
         } catch (error) {
           console.error("Error fetching admin details:", error);
         }
@@ -82,6 +84,11 @@ const Admin = () => {
 
         <div className="mt-8">
           
+       <RequestManagement
+          token={token}
+          requests={requests}
+       />
+
         <DonationManagement
           token={token}
           allDonations={allDonations}

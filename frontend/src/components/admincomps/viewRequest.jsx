@@ -1,89 +1,142 @@
+import axios from "axios";
+import { CiCalendarDate } from "react-icons/ci";
+import { MdCancel, MdDelete, MdEdit } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
-import { MdCancel } from "react-icons/md";
 
-const ViewRequest = ({ setView, selectedRequest, updateRequestStatus }) => {
-    const handleApprove = () => {
-        updateRequestStatus(selectedRequest._id, "approved");
-        setView(false);
-    };
+const ViewRequest = ({setViewRequest, requestDetails, token}) => {
+
+  // approing donation
+  const handleApprove = async (id) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:3000/api/requests/${id}/approve`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log(res.data);
+     setViewRequest(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //rejecting donation
+  const handleReject = async (id) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:3000/api/requests/${id}/reject`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log(res.data);
     
-    const handleReject = () => {
-        updateRequestStatus(selectedRequest._id, "rejected");
-        setView(false);
-    };
-    
+     setViewRequest(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
-    const handleDelete = () => {
-      // if you want delete, tell me — I will add it  
-    };
-  
-    return (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-  
-          {/* Header */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Donation Details</h2>
-            <button onClick={() => setView(false)}><MdCancel size={22} /></button>
-          </div>
-  
-          {/* ID + Status */}
-          <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg mb-4">
-            <h3 className="font-medium text-gray-700">{selectedRequest._id}</h3>
-  
-            <span className={`px-3 py-1 text-xs rounded-full 
-              ${selectedRequest.reqStatus === "pending" ? "bg-yellow-100 text-yellow-700" :
-                selectedRequest.reqStatus === "approved" ? "bg-green-100 text-green-700" :
-                "bg-red-100 text-red-700"}`}>
-              {selectedRequest.reqStatus}
-            </span>
-          </div>
-  
-          {/* Details */}
-          <div className="space-y-3">
-            <div>
-              <p className="text-xs text-gray-500">Donor</p>
-              <h3 className="font-medium">{selectedRequest.donorDetails?.name}</h3>
+    return ( 
+        <>
+             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
+
+            {/* Header */}
+            <div className="flex justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">Requests Details</h2>
+                <p className="font-medium">View and Manage donaation Details</p>
+              </div>
+              <button 
+               onClick={()=>setViewRequest(false)}
+              >
+                <MdCancel size={22} />
+              </button>
             </div>
-  
-            <div>
-              <p className="text-xs text-gray-500">Beneficiary</p>
-              <h3 className="font-medium">{selectedRequest.beneficiaryDetails?.name}</h3>
+
+            {/* Profile */}
+            <div className="flex gap-2 bg-gray-50 p-3 rounded-lg mb-4">
+              <div>
+                <p>Request ID</p>
+                <p className="font-medium text-2xl">{requestDetails?._id}</p>
+              </div>
             </div>
-  
-            <div>
-              <p className="text-xs text-gray-500">Food Item</p>
-              <h3 className="font-medium">{selectedRequest.donationDetails?.title}</h3>
+
+            {/* User Info */}
+            <div className="grid grid-cols-2 gap-3">
+              
+              <div>
+                <p className="text-lg text-gray-500">Donor</p>
+                <p className="flex items-center gap-1 font-semibold">{requestDetails?.donor?.name}</p>
+              </div>
+
+              <div>
+                <p className="text-lg text-gray-500">Beneficiary</p>
+                <p className="font-semibold">{requestDetails?.beneficiary?.name}</p>
+              </div>
+
+              <div>
+                <p className="text-lg text-gray-500">Food Item</p>
+                <p className="flex items-center gap-1 font-semibold">{requestDetails?.donation?.title}</p>
+              </div>
+              <div>
+                <p className="text-lg text-gray-500">Location</p>
+                <p className="flex items-center gap-1 font-semibold">{requestDetails?.donation?.location}</p>
+              </div>
+
+              <div>
+                <p className="text-lg text-gray-500">Join Date</p>
+                <p className="flex items-center gap-1 font-semibold">
+                  <CiCalendarDate className="text-gray-500" />
+                  {new Date(requestDetails.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-lg text-gray-500">Status</p>
+                <p className="font-semibold">{requestDetails.reqStatus}</p>
+              </div>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="flex justify-between gap-3 mt-6">
+              <button
+                onClick={() => {
+                  handleDelete(requestDetails._id);
+                 
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg flex gap-1 items-center"
+              >
+                <MdDelete size={18} />
+              </button>
+
+              <button
+                onClick={() => {
+                  handleReject(requestDetails._id); 
+                  setViewRequest(false)}}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
+              >
+                <MdCancel size={18} /> Reject
+              </button>
+
+              <button
+              
+                onClick={() => handleApprove(requestDetails._id)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
+              >
+                <TiTick size={18} /> Approve
+              </button>
             </div>
           </div>
-  
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-6">
-            <button
-              onClick={handleReject}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg flex gap-1 items-center"
-            >
-              <MdCancel size={18} /> Reject
-            </button>
-  
-            <button
-              onClick={() => setView(false)}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg flex gap-1 items-center"
-            >
-              Close
-            </button>
-  
-            <button
-              onClick={handleApprove}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
-            >
-              <TiTick size={18} /> Approve
-            </button>
-          </div>
-  
         </div>
-      </div>
-    );
-  }
-  
-  export default ViewRequest;
+        </>
+     );
+}
+ 
+export default ViewRequest;

@@ -138,7 +138,7 @@ const Donation = require('../models/donation.model')
         const donation = await Donation.findById(req.params.id);
         if (!donation) return res.status(404).json({ message: "Donation not found" });
     
-        donation.donationStatus = "rejected";
+        donation.donationStatus = "Rejected";
         await donation.save();
         res.json({ message: "Donation rejected", donation });
       } catch (err) {

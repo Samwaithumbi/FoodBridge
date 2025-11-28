@@ -1,51 +1,77 @@
-const  Request = require("../models/requests.model")
-const Donation = require("../models/donation.model")
+const Requests = require("../models/requests.model");
+const Donation = require("../models/donation.model");
 
-//beneficiary requesting donation
+// beneficiary requesting donation
 const createRequest = async (req, res) => {
   try {
-    const { donationId,reqStatus, message } = req.body;
+    const { donationId, message } = req.body;
     const beneficiaryId = req.user._id;
 
     const donation = await Donation.findById(donationId);
-    if (!donation) return res.status(404).json({ message: "Donation not found" });
+    if (!donation)
+      return res.status(404).json({ message: "Donation not found" });
 
-    const request = await Request.findOne({
+    // check if user already requested this donation
+    const existing = await Requests.findOne({
       donation: donationId,
       beneficiary: beneficiaryId,
-  })
-    if(request){
-     return res.status(400).json({message:"You have already requested this donation."})
+    });
+
+    if (existing) {
+      return res
+        .status(400)
+        .json({ message: "You have already requested this donation." });
     }
+
     const newRequest = await Request.create({
-      donor:donation.donor,
+      donor: donation.donor,
       beneficiary: beneficiaryId,
-      donation: donationId,
-      donation,
+      donation: donationId, 
       message,
-      reqStatus
+      reqStatus: "Pending",
     });
 
     res.status(201).json(newRequest);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Duplicate request detected." });
-    }
     res.status(500).json({ message: error.message });
   }
 };
 
-const getPendingRequests = async(req, res)=>{
+// get all requests (admin)
+const getPendingRequests = async (req, res) => {
   try {
-    const pendingRequests = await Request.find()
-    res.status(200).json(pendingRequests)
+    const requests = await Requests.find()
+      .populate("donor", "name email location")
+      .populate("beneficiary", "name email location")
+      .populate("donation", "title quantity location expiryDate");
+
+    res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json(error.message)
+    res.status(500).json({ message: error.message });
   }
-}
-//updating request
+};
+
+const getRequestById = async (req, res) => {
+  try {
+    const request = await Requests.findById(req.params.id)
+      .populate("donor", "name email location")
+      .populate("beneficiary", "name email location")
+      .populate("donation", "title quantity location expiryDate");
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json(request);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+// update request
 const updateRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
@@ -55,7 +81,7 @@ const updateRequest = async (req, res) => {
       return res.status(400).json({ message: "reqStatus is required" });
     }
 
-    const updatedRequest = await Request.findByIdAndUpdate(
+    const updatedRequest = await Requests.findByIdAndUpdate(
       requestId,
       { reqStatus },
       { new: true }
@@ -71,7 +97,77 @@ const updateRequest = async (req, res) => {
   }
 };
 
+const approveRequest = async (req, res) => {
+  try {
+    const request = await Requests.findById(req.params.id);
+
+    if (!request)
+      return res.status(404).json({ message: "Request not found" });
+
+    request.reqStatus = "Approved";
+    await request.save();
+
+    res.status(200).json({
+      message: "Request approved",
+      request
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 
-   module.exports={createRequest, getPendingRequests, updateRequest}
+//reject donation
+const rejectRequest = async (req, res) => {
+  try {
+    const request = await Requests.findById(req.params.id);
+
+    if (!request)
+      return res.status(404).json({ message: "Request not found" });
+
+    request.reqStatus = "Rejected";
+    await request.save();
+
+    res.status(200).json({
+      message: "Request rejected",
+      request
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteRequest = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const request = await Requests.findById(id);
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    await Requests.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Request deleted successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+module.exports = {
+  createRequest,
+  getPendingRequests,
+  getRequestById,
+  updateRequest,
+  approveRequest,
+  rejectRequest,
+  deleteRequest
+};

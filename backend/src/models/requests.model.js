@@ -3,12 +3,12 @@ const mongoose = require('mongoose')
 const requestSchema =new mongoose.Schema({
    donor:{
       type:mongoose.Schema.Types.ObjectId,
-      ref:"Donations",
+      ref:"User",
       required: true
       },
    beneficiary:{
       type:mongoose.Schema.Types.ObjectId,
-      ref:"user",
+      ref:"User",
       required:true
    },
    donation:{

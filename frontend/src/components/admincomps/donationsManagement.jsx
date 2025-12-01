@@ -1,12 +1,40 @@
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import ViewDonation from "./viewDonation";
 
-const DonationManagement = ({ allDonations, token , refreshDonations}) => {
+const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonations}) => {
   const [viewDonation, setViewDonation] = useState(false);
   const [donationDetails, setDonationDetails] = useState({});
+  const [search, setSearch] = useState("")
+  const [status, setStatus]=useState("")
+
+  const fetchDonations = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/admin/donations", {
+        params: {
+          q: search,
+          status: status,      
+        },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setAllDonations(res.data.donations);
+    } catch (error) {
+      console.log("Failed to fetch users", error);
+    }
+  };
+  
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchDonations();
+    }, 400);
+  
+    return () => clearTimeout(delay);
+  }, [search, status]);
+  
+  
 
   const handleViewDonation = async (id) => {
     try {
@@ -41,22 +69,24 @@ const DonationManagement = ({ allDonations, token , refreshDonations}) => {
   return (
     <>
       <div className="p-6 bg-white rounded-xl shadow">
-        <h1>Donation Management</h1>
-
-        {/* Top Bar */}
+           <h1>Donation Management</h1>
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-          <input
+            <input
             type="text"
-            placeholder="Search donations..."
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
           />
-
-          <select className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-40">
-            <option>All Roles</option>
-            <option>Admin</option>
-            <option>Donor</option>
-            <option>Recipient</option>
+         <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Available">Available</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Claimed">Claimed</option>
+            <option value="Expired">Expired</option>
           </select>
+
         </div>
 
         {/* Table */}
@@ -133,6 +163,6 @@ const DonationManagement = ({ allDonations, token , refreshDonations}) => {
       )}
     </>
   );
-};
+}
 
 export default DonationManagement;

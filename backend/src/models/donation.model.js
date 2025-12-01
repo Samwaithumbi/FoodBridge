@@ -24,11 +24,12 @@ const donationSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Please the quantity of donation"]
       },
-      donationStatus: {
+      donationStatus: { 
         type: String,
-        enum: ["Pending","Available", "Claimed","Rejected","Completed", "Expired"],
+        enum: ["Pending","Available", "Claimed","Rejected","Completed","Expired"],
         default: "Pending"
-      },
+      },      
+      
       donor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

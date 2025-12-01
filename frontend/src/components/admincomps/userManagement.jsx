@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import ViewUser from "./viewUser";
@@ -8,6 +8,33 @@ const AdminUsersTable = ({ users,setUsers, token }) => {
 
   const [userDetails, setUserDetails]= useState("")
   const [viewUser, setViewUser]= useState(false)
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState(""); 
+
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/admin/users", {
+        params: {
+          q: search,
+          role: role,      
+        },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      setUsers(res.data.users);
+    } catch (error) {
+      console.log("Failed to fetch users", error);
+    }
+  };
+  
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchUsers();
+    }, 400); // debounce typing
+  
+    return () => clearTimeout(delay);
+  }, [search, role]);
+  
 
   //viewing a user info
   const handleUser =async(id)=>{
@@ -42,18 +69,23 @@ const AdminUsersTable = ({ users,setUsers, token }) => {
 
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search users..."
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
-        />
+      <input
+        type="text"
+        placeholder="Search users..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
+      />
 
-        <select className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-40">
-          <option>All Roles</option>
-          <option>Admin</option>
-          <option>Donor</option>
-          <option>Recipient</option>
+
+        <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="">All Roles</option>
+          <option value="Donor">Donor</option>
+          <option value="Beneficiary">Beneficiary</option>
+          <option value="Admin">Admin</option>
         </select>
+
+
       </div>
 
       {/* Responsive Scroll */}

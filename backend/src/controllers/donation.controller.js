@@ -78,23 +78,52 @@ const getMyDonations = async (req, res) => {
 // Get available donations for beneficiary to view
 const getAllDonations = async (req, res) => {
   try {
-    const donations = await Donations.find({donationStatus:"Available"});
+    const { q, status } = req.query;
+    let filter = {};
+
+    // Search by title or description
+    if (q) {
+      filter.$or = [
+        { title: new RegExp(q, "i") },
+        { description: new RegExp(q, "i") }
+      ];
+    }
+
+    if (status && status.trim() !== "") {
+      filter.donationStatus = status;
+    }
+    
+    console.log("FILTER:", filter);
+
+    const donations = await Donations.find(filter).populate('donor', 'name');
     res.status(200).json({ donations });
+
   } catch (error) {
+    console.error(error);
     res.status(400).json({ error: error.message });
   }
 };
+
+
+
 
 // Get available donations
 const getAvailableDonations = async (req, res) => {
   try {
     const today = new Date();
-    const donations = await Donations.find({ expiryDate: { $gt: today } });
+
+    const donations = await Donations.find({
+      expiryDate: { $gt: today },
+      status: "Available"
+    }).populate("donor", "name email");
+
     res.status(200).json({ donations });
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Get donation by id
 const getOneDonation = async (req, res) => {

@@ -1,6 +1,11 @@
 import { LuUsers, LuGift, LuClock } from "react-icons/lu";
 
-const Analytics = ({ users, allDonations, availableDonations, requests }) => {
+const Analytics = ({
+  users = [],
+  allDonations = [],
+  availableDonations = [],
+  requests = []
+}) => {
   const stats = [
     { label: "Total Users", value: users.length, icon: <LuUsers size={30} />, bg: "bg-blue-500" },
     { label: "Total Donations", value: allDonations.length, icon: <LuGift size={30} />, bg: "bg-green-500" },

@@ -1,25 +1,32 @@
 const User = require('../models/auth.model') 
 const Donation = require('../models/donation.model')
  
- //all users
- const getUsers = async (req, res, next) => {
+ //getting all users
+ const getUsers = async (req, res) => {
   try {
-    const { page = 1, limit = 50, q } = req.query;
+    const { q, role } = req.query;
     const filter = {};
-    if (q) filter.$or = [{ name: new RegExp(q, "i") }, { email: new RegExp(q, "i") }];
 
-    const users = await User.find(filter)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .select("-password")
-      .sort({ createdAt: -1 });
+    if (q) {
+      filter.$or = [
+        { name: new RegExp(q, "i") },
+        { email: new RegExp(q, "i") }
+      ];
+    }
 
-    const total = await User.countDocuments(filter);
-    res.json({ users, total, page: parseInt(page), pages: Math.ceil(total / limit) });
-  } catch (err) {
-    next(err);
+    // ROLE FILTER
+    if (role && role.trim() !== "") {
+      filter.role = role;
+    }
+
+    const users = await User.find(filter).select("-password");
+
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
+
   
   //get user by id
   const getSingleUserById = async (req, res, next) => {

@@ -146,7 +146,7 @@ const Register = () => {
           <div>
             <p className="block text-sm font-semibold text-gray-700 mb-2">Select Your Role</p>
             <div className="flex gap-4">
-              {["donor", "beneficiary"].map((option) => (
+              {["Donor", "Beneficiary"].map((option) => (
                 <label
                   key={option}
                   htmlFor={option}

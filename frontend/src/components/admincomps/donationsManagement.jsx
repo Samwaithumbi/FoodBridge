@@ -29,7 +29,7 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
   useEffect(() => {
     const delay = setTimeout(() => {
       fetchDonations();
-    }, 400);
+    }, 100);
   
     return () => clearTimeout(delay);
   }, [search, status]);

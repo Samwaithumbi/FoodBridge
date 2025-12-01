@@ -10,7 +10,7 @@ const DonorWelcome = ({name, donations, setDonations}) => {
   };
 
   return (
-    <section className="mt-10 flex flex-col md:flex-row justify-between items-start md:items-center bg-white shadow-sm rounded-2xl p-6 border border-gray-100">
+    <section className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row justify-between items-start md:items-center  rounded-2xl p-6 border border-gray-100">
       <div>
         <h1 className="text-3xl font-semibold text-gray-800">
           {getGreeting()}, <br />
@@ -20,11 +20,11 @@ const DonorWelcome = ({name, donations, setDonations}) => {
           You are making a <span className="font-semibold text-green-600">real difference</span> in fighting hunger.
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          Thank you for supporting communities in need through <span className="font-medium">Footbridge</span>.
+          Thank you for supporting communities in need through <span className="font-medium">FoodBridge</span>.
         </p>
       </div>
 
-     <AddDonation  donations={donations} setDonations={setDonations}/>
+      <AddDonation donations={donations} setDonations={setDonations} />
     </section>
   );
 };

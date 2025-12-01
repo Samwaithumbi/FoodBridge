@@ -14,11 +14,11 @@ const Analytics = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-5 mx-[60px]  md:grid-cols-4 md:m-0">
       {stats.map((stat, index) => (
         <div
           key={index}
-          className=" w-[250px] flex flex-col items-center justify-center p-5 rounded-xl shadow-md bg-white"
+          className=" border border-amber-600 w-[250px] flex flex-col items-center justify-center p-5 rounded-xl shadow-md bg-white"
         >
           <div className={`  p-3 mb-3 rounded-lg ${stat.bg} flex items-center justify-center text-white`}>
             {stat.icon}

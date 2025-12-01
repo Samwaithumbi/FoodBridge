@@ -1,5 +1,3 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
 import DonorWelcome from "@/components/donationscomps/donar-welcome"
 import Stats from "@/components/donationscomps/stats"
 import Donations from "@/components/donationscomps/donationLists"
@@ -17,19 +15,14 @@ export default function Layout() {
 
   const userData=JSON.parse(localStorage.getItem("userData"))
   return (
-    <SidebarProvider>
-    <div className="m-0 flex">
-      <AppSidebar />
-  
-      {/* Main content */}
-      <main className="flex-1 ">
-        <div className=" p-2 gap-35 bg-amber-50 flex justify-between items-center  fixed md:gap-[800px]">
-          <SidebarTrigger />
+  <>
+    <main >
+        <div >
           <Nav name={userData.name} userId={userData.userId}/>
         </div>
   
         
-        <section className="mt-13">
+        <section >
           <DonorWelcome  donations={donations} setDonations={setDonations} name={userData.name} />
         </section>
         <section className="mb-6">
@@ -39,8 +32,7 @@ export default function Layout() {
           <Donations donations={donations} setDonations={setDonations}/>
         </section>
       </main>
-    </div>
-  </SidebarProvider>
   
+  </>
   )
 }

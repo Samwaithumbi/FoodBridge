@@ -1,24 +1,20 @@
 const Donations = require("../models/donation.model");
 const mongoose = require("mongoose");
-// Create new donation
-const createDonation = async (req, res) => {
-  try {
-    const { title, description, location, expiryDate, quantity, image,donationStatus } = req.body;
 
-    // 1. Validate required fields
+
+const createDonation = async (req, res, next) => {
+  try {
+    const { title, description, location, expiryDate, quantity, image, donationStatus } = req.body;
+
     if (!title || !description || !location || !expiryDate || !quantity) {
-      console.log("❌ Missing required fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (!req.user || !req.user._id) {
-      console.log("❌ User not authenticated");
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    // 2. Validate quantity
     if (quantity <= 0) {
-      console.log("❌ Invalid quantity");
       return res.status(400).json({ message: "Quantity must be greater than zero" });
     }
 
@@ -36,9 +32,6 @@ const createDonation = async (req, res) => {
       return res.status(400).json({ message: "Expiry date cannot be in the past" });
     }
 
-    console.log("✅ All validations passed");
-    console.log("🔄 Creating donation in database...");
-
     // 4. Create donation
     const donation = await Donations.create({
       title,
@@ -52,31 +45,28 @@ const createDonation = async (req, res) => {
     });
 
     console.log("✅ Donation created successfully!");
-    console.log("   ID:", donation._id);
-    console.log("   Image URL:", donation.image);
-    console.log("📝 === CREATE DONATION END ===");
-
     res.status(201).json({ success: true, donation });
   } catch (error) {
-    console.error("❌ === CREATE DONATION ERROR ===");
-    console.error("Error:", error.message);
-    console.error("Stack:", error.stack);
-    res.status(500).json({ message: error.message || "Server error" });
+    next(error)
   }
 };
 
-// Get donor donations
-const getMyDonations = async (req, res) => {
+// Donor's  donations
+const getMyDonations = async (req, res, next) => {
   try {
     const donations = await Donations.find({ donor: req.user._id });
+
+    if (donations) {
+      res.status(404).json({message:"Donations not found"})
+    }
     res.status(200).json(donations);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching donations", error: error.message });
+   next(error)
   }
 };
 
-// Get available donations for beneficiary to view
-const getAllDonations = async (req, res) => {
+// All  Donations
+const getAllDonations = async (req, res, next) => {
   try {
     const { q, status } = req.query;
     let filter = {};
@@ -89,22 +79,17 @@ const getAllDonations = async (req, res) => {
       ];
     }
 
+    //sort by status
     if (status && status.trim() !== "") {
       filter.donationStatus = status;
     }
-    
-    console.log("FILTER:", filter);
 
     const donations = await Donations.find(filter).populate('donor', 'name');
     res.status(200).json({ donations });
-
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: error.message });
+   next(error)
   }
 };
-
-
 
 
 // Get available donations
@@ -128,13 +113,10 @@ const getAvailableDonations = async (req, res) => {
 // Get donation by id
 const getOneDonation = async (req, res) => {
   try {
-
-    // 1. Validate ID
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: "Invalid donation ID" });
     }
 
-    // 2. Fetch donation
     const donation = await Donations.findById(req.params.id);
 
     if (!donation) {
@@ -152,8 +134,7 @@ const getOneDonation = async (req, res) => {
     res.status(200).json({ donation });
 
   } catch (error) {
-    console.error("getOneDonation ERROR:", error);
-    res.status(500).json({ message: "Server error" });
+   next(error)
   }
 };
 

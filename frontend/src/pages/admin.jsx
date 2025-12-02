@@ -27,9 +27,8 @@ const Admin = () => {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
-      
         setAvailableDonations(availableDonationRes.data.donations);
-        setRequests(requestsRes.data.requests);
+        setRequests(requestsRes.data);
       } catch (error) {
         console.error("Error fetching admin details:", error);
       }

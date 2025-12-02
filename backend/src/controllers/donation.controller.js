@@ -56,9 +56,6 @@ const getMyDonations = async (req, res, next) => {
   try {
     const donations = await Donations.find({ donor: req.user._id });
 
-    if (donations) {
-      res.status(404).json({message:"Donations not found"})
-    }
     res.status(200).json(donations);
   } catch (error) {
    next(error)
@@ -95,12 +92,11 @@ const getAllDonations = async (req, res, next) => {
 // Get available donations
 const getAvailableDonations = async (req, res) => {
   try {
-    const today = new Date();
+   
 
     const donations = await Donations.find({
-      expiryDate: { $gt: today },
-      status: "Available"
-    }).populate("donor", "name email");
+      donationStatus: "Available"
+    })
 
     res.status(200).json({ donations });
 

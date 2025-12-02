@@ -35,7 +35,7 @@ export default function Login() {
       localStorage.setItem("userData",JSON.stringify(res.data))
       localStorage.setItem("token", res.data.token)
       console.log(res.data);
-      if (res.status === 200 && res.data.role =="donor" ) {
+      if (res.status === 200 && res.data.role =="Donor" ) {
         toast.success("Logged in successful")
         navigate("/donor-dashboard")
       }else{

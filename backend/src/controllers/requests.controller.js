@@ -23,7 +23,7 @@ const createRequest = async (req, res) => {
         .json({ message: "You have already requested this donation." });
     }
 
-    const newRequest = await Request.create({
+    const newRequest = await Requests.create({
       donor: donation.donor,
       beneficiary: beneficiaryId,
       donation: donationId, 

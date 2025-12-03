@@ -1,8 +1,9 @@
 const Requests = require("../models/requests.model");
 const Donation = require("../models/donation.model");
 
-// beneficiary requesting donation
-const createRequest = async (req, res) => {
+
+// Create request
+const createRequest = async (req, res, next) => { 
   try {
     const { donationId, message } = req.body;
     const beneficiaryId = req.user._id;
@@ -11,16 +12,13 @@ const createRequest = async (req, res) => {
     if (!donation)
       return res.status(404).json({ message: "Donation not found" });
 
-    // check if user already requested this donation
     const existing = await Requests.findOne({
       donation: donationId,
       beneficiary: beneficiaryId,
     });
 
     if (existing) {
-      return res
-        .status(400)
-        .json({ message: "You have already requested this donation." });
+      return res.status(400).json({ message: "You have already requested this donation." });
     }
 
     const newRequest = await Requests.create({
@@ -31,11 +29,17 @@ const createRequest = async (req, res) => {
       reqStatus: "Pending",
     });
 
+    // Correct ID usage here
+    await Donation.findByIdAndUpdate(donationId, {
+      request: newRequest._id
+    });
+
     res.status(201).json(newRequest);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
+
 
 // get all requests (admin)
 const getPendingRequests = async (req, res) => {
@@ -43,7 +47,7 @@ const getPendingRequests = async (req, res) => {
     const requests = await Requests.find()
       .populate("donor", "name email location")
       .populate("beneficiary", "name email location")
-      .populate("donation", "title quantity location expiryDate");
+      .populate("donation", "title quantity location expiryDate, request")
 
     res.status(200).json(requests);
   } catch (error) {
@@ -56,7 +60,8 @@ const getRequestById = async (req, res) => {
     const request = await Requests.findById(req.params.id)
       .populate("donor", "name email location")
       .populate("beneficiary", "name email location")
-      .populate("donation", "title quantity location expiryDate");
+      .populate("donation", "title quantity location expiryDate")
+  
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
@@ -106,6 +111,8 @@ const approveRequest = async (req, res) => {
 
     request.reqStatus = "Approved";
     await request.save();
+
+   
 
     res.status(200).json({
       message: "Request approved",

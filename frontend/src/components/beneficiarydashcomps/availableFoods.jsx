@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const AvailableFood = ({ reqStatus, setReqStatus }) => {
+const AvailableFood = () => {
   const [availableDonations, setAvailableDonations] = useState([]);
+  const [message, setMessage]=useState("")
   const token = localStorage.getItem("token");
 
   // Fetching available donations
@@ -12,6 +13,7 @@ const AvailableFood = ({ reqStatus, setReqStatus }) => {
       try {
         const res = await axios.get("http://localhost:3000/api/donations/available");
         setAvailableDonations(res.data.donations);
+        console.log(res.data);
       } catch (error) {
         console.log(error.message);
         toast.error("❌Failed to fetch available donations");
@@ -23,11 +25,10 @@ const AvailableFood = ({ reqStatus, setReqStatus }) => {
 
   // Requesting donation
   const handleRequest = async (donationId) => {
-    setReqStatus("Pending");
     try {
       const res = await axios.post(
         "http://localhost:3000/api/requests/create",
-        { donationId, reqStatus },
+        { donationId, message },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -42,7 +43,8 @@ const AvailableFood = ({ reqStatus, setReqStatus }) => {
       if (error.response?.status === 400) {
         toast.warning(error.response.data.message);
       } else {
-        toast.error("Something went wrong. Try again.");
+        toast.error("Something went wrong. Try again.", {error});
+        console.log(error);
       }
     }
   };
@@ -113,7 +115,8 @@ const AvailableFood = ({ reqStatus, setReqStatus }) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Status</p>
-                    <p className="font-medium text-gray-800">{donation.reqStatus}</p>
+                    <p>{donation.request?.reqStatus || "No Request"}</p>
+
                   </div>
                 </div>
 

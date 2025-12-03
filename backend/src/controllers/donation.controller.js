@@ -96,7 +96,7 @@ const getAvailableDonations = async (req, res) => {
 
     const donations = await Donations.find({
       donationStatus: "Available"
-    })
+    }).populate("request", "reqStatus")
 
     res.status(200).json({ donations });
 

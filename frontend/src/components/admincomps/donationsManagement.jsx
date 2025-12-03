@@ -89,18 +89,18 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
 
         </div>
 
-        {/* Table */}
-        <div className="w-full overflow-x-auto">
+      {/* Table Wrapper */}
+        <div className="w-full overflow-x-auto sm:rounded-lg">
           <table className="min-w-max w-full border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
-                <th className="p-3 border">Donor</th>
-                <th className="p-3 border">Item Name</th>
-                <th className="p-3 border">Status</th>
-                <th className="p-3 border">Location</th>
-                <th className="p-3 border">Quantity</th>
-                <th className="p-3 border">Expiry</th>
-                <th className="p-3 border text-center">Actions</th>
+                <th className="p-3 border whitespace-nowrap">Donor</th>
+                <th className="p-3 border whitespace-nowrap">Item Name</th>
+                <th className="p-3 border whitespace-nowrap">Status</th>
+                <th className="p-3 border whitespace-nowrap">Location</th>
+                <th className="p-3 border whitespace-nowrap">Quantity</th>
+                <th className="p-3 border whitespace-nowrap">Expiry</th>
+                <th className="p-3 border whitespace-nowrap text-center">Actions</th>
               </tr>
             </thead>
 
@@ -108,20 +108,24 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
               {allDonations && allDonations.length > 0 ? (
                 allDonations.map((donation) => (
                   <tr key={donation._id} className="border-b hover:bg-gray-50">
-                    <td className="p-3 border">
+                    <td className="p-3 border whitespace-nowrap">
                       {donation.donor?.name || "unknown"}
                     </td>
-                    <td className="p-3 border">{donation.title}</td>
-                    <td className="p-3 border">{donation.donationStatus}</td>
-                    <td className="p-3 border">{donation.location || "N/A"}</td>
-                    <td className="p-3 border">{donation.quantity || 0}</td>
-                    <td className="p-3 border">
+                    <td className="p-3 border whitespace-nowrap">{donation.title}</td>
+                    <td className="p-3 border whitespace-nowrap">{donation.donationStatus}</td>
+                    <td className="p-3 border whitespace-nowrap">
+                      {donation.location || "N/A"}
+                    </td>
+                    <td className="p-3 border whitespace-nowrap">
+                      {donation.quantity || 0}
+                    </td>
+                    <td className="p-3 border whitespace-nowrap">
                       {new Date(donation.expiryDate).toLocaleDateString()}
                     </td>
 
-                    {/* Action Buttons */}
-                    <td className="p-3 border">
-                      <div className="flex gap-2 justify-center">
+                    {/* Actions */}
+                    <td className="p-3 border whitespace-nowrap">
+                      <div className="flex gap-2 justify-center flex-shrink-0">
                         <button
                           className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
                           onClick={() => handleViewDonation(donation._id)}
@@ -149,6 +153,7 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
             </tbody>
           </table>
         </div>
+
       </div>
 
       {/* View Donation Modal */}

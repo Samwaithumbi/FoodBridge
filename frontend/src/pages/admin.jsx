@@ -12,6 +12,7 @@ const Admin = () => {
   const [allDonations, setAllDonations] = useState([]);
   const [availableDonations, setAvailableDonations] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [activePage, setActivePage]=useState("User Management")
 
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjVhNjQxNmY4YjY2NzdjY2EyZjI2OSIsImlhdCI6MTc2NDA3NTEwOSwiZXhwIjoxNzY2NjY3MTA5fQ.xOBdRvTR4zPtzW7BxVE8lC2zNYhfbSYfMAFykI00AGU";
@@ -55,7 +56,7 @@ const Admin = () => {
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-100">
         {/* Sidebar */}
-        <AppSidebar />
+        <AppSidebar activePage={activePage} setActivePage={setActivePage}/>
         
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
@@ -78,15 +79,28 @@ const Admin = () => {
               />
             </div>
 
-            {/* Management Sections */}
-            <div className="space-y-8">
-              {/* Requests */}
-              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                <RequestManagement token={token} requests={requests} />
+            <div>
+            {activePage === "Dashboard" && (
+              <div className="mb-8">
+                <Analytics
+                  users={users}
+                  allDonations={allDonations}
+                  availableDonations={availableDonations}
+                  requests={requests}
+                />
               </div>
+            )}
 
-              {/* Donations */}
-              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+            {/* ================== USER MANAGEMENT ================== */}
+            {activePage === "User Management" && (
+              <div className="bg-white p-6 rounded-xl shadow-md">
+                <AdminUsersTable token={token} users={users} setUsers={setUsers} />
+              </div>
+            )}
+
+            {/* ================== DONATION MANAGEMENT ================== */}
+            {activePage === "Donation Management" && (
+              <div className="bg-white p-6 rounded-xl shadow-md">
                 <DonationManagement
                   token={token}
                   allDonations={allDonations}
@@ -94,15 +108,29 @@ const Admin = () => {
                   refreshDonations={fetchDonations}
                 />
               </div>
+            )}
 
-              {/* Users */}
-              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                <AdminUsersTable
-                  token={token}
-                  users={users}
-                  setUsers={setUsers}
-                />
+            {/* ================== REQUEST MANAGEMENT ================== */}
+            {activePage === "Request Management" && (
+              <div className="bg-white p-6 rounded-xl shadow-md">
+                <RequestManagement token={token} requests={requests} />
               </div>
+            )}
+
+            {/* ================== PROFILE ================== */}
+            {activePage === "Profile" && (
+              <div className="bg-white p-6 rounded-xl shadow-md text-center">
+                <p>Your profile features go here.</p>
+              </div>
+            )}
+
+            {/* ================== SETTINGS ================== */}
+            {activePage === "Settings" && (
+              <div className="bg-white p-6 rounded-xl shadow-md text-center">
+                <p>Settings panel coming soon.</p>
+               
+            </div>
+            )}
             </div>
           </main>
         </div>

@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const donationSchema = new mongoose.Schema({
+  request: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Requests"
+  },
+  
     title:{
         type:String,
         required: [true, 'Please enter a title for the food donation']

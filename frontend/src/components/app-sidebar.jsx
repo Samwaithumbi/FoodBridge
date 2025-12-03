@@ -14,35 +14,30 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Dashboard",
-    url: "#",
+    title: "User Management",
     icon: Home,
   },
   {
-    title: "Analytics",
-    url: "#",
+    title: "Donation Management",
     icon: Inbox,
   },
   {
-    title: "Donations",
-    url: "#",
+    title: "Request Management",
     icon: Calendar,
   },
   {
     title: "Profile",
-    url: "#",
     icon: Search,
   },
   {
     title: "Settings",
-    url: "#",
     icon: Settings,
   },
 ]
  
-export function AppSidebar() {
+export function AppSidebar({activePage, setActivePage }) {
   return (
-    <Sidebar className="fixed md:static">
+    <Sidebar className="">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
@@ -50,11 +45,18 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    onClick={() => setActivePage(item.title)}
+                  >
+                    <button  className={`
+                        flex items-center gap-2 w-full text-left
+                        hover:shadow shadow-amber-200
+                        ${activePage === item.title ? "bg-amber-200" : "bg-transparent"}
+                      `}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -63,5 +65,5 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

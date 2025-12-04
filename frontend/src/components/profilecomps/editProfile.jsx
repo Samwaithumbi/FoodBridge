@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
   const [formData, setFormData] = useState({
-    username: userProfile?.username || "",
+    name: userProfile?.name || "",
     email: userProfile?.email || "",
     phone: userProfile?.phone || "",
     role: userProfile?.role || "",
@@ -29,7 +29,8 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
     const file = e.target.files[0];
     if (!file) return;
     setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
+    setPreview(res.data.profilePic);
+
   };
 
   // ✅ One function to handle both image + text update
@@ -38,7 +39,7 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
     const id = userData._id;
 
     const data = new FormData();
-    data.append("username", formData.username);
+    data.append("name", formData.name);
     data.append("email", formData.email);
     data.append("phone", formData.phone);
     data.append("role", formData.role);
@@ -46,15 +47,17 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
     if (selectedFile) data.append("profilePic", selectedFile);
 
     try {
-      const res = await axios.put(
-        `http://localhost:3000/api/auth/edit-profile/${id}`,
+      const res = await axios.patch(
+        `http://localhost:3000/api/profile/edit`,
         data,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
           },
         }
       );
+      
 
       setUserProfile(res.data);
       localStorage.setItem("userData", JSON.stringify(res.data));
@@ -97,13 +100,13 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
             </button>
 
             <button
-              type="submit"
-              form="edit-profile-form"
-              onSubmit={handleSubmit} 
+              type="button"
+              onClick={handleSubmit}
               className="mt-3 px-4 py-2 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition"
             >
               <Edit3 className="w-4 h-4" /> Save changes
             </button>
+
           </div>
         </div>
       </div>
@@ -120,9 +123,9 @@ const EditProfile = ({ userProfile, setUserProfile, setIsEditing }) => {
               <p className="text-lg font-semibold">Full Name</p>
               <input
                 type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                id="name"
+                name="name"
+                value={formData.name}
                 className="border p-1.5 w-[250px]"
                 onChange={handleChange}
               />

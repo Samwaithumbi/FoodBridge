@@ -112,7 +112,7 @@ const approveRequest = async (req, res) => {
     request.reqStatus = "Approved";
     await request.save();
 
-   
+       
 
     res.status(200).json({
       message: "Request approved",

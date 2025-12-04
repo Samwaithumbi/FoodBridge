@@ -20,10 +20,11 @@ credentials: true,}))
 
 app.use(express.json())
 app.use(errorHandler)
+app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.use('/api/auth', authRoutes)
-app.use('api/profile', profileRoutes)
+app.use('/api/profile', profileRoutes)
 app.use('/api/donations', donationsRoutes)
 app.use('/api/requests', requestsRoutes)
 app.use('/api/admin', adminRoutes)

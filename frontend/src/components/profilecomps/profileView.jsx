@@ -8,7 +8,7 @@ const ProfileView = ({userProfile, setUserProfile, setIsEditing})=> {
   useEffect(()=>{
     const fetchUserProfile = async()=>{
    try {
-    const res = await axios.get('http://localhost:3000/api/auth/myprofile', {
+    const res = await axios.get('http://localhost:3000/api/profile/myprofile', {
       headers:{
         Authorization:`Bearer ${token}`
       }
@@ -29,11 +29,11 @@ const ProfileView = ({userProfile, setUserProfile, setIsEditing})=> {
       <div className="w-full relative">
         <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-300" />
         <div className="absolute top-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-          <img
-            src="https://i.pravatar.cc/100"
-            alt="profile"
-            className="w-28 h-28 rounded-full border-4 border-white shadow-md"
+        <img
+            src={userProfile.profilePic || "/default-avatar.png"}
+            className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover"
           />
+
           <button 
           onClick={()=>setIsEditing(true)}
           className="mt-3 px-4 py-2 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-gray-800 transition">
@@ -53,7 +53,7 @@ const ProfileView = ({userProfile, setUserProfile, setIsEditing})=> {
           <div className="space-y-4">
             <div>
               <p className=" text-lg font-semibold">Full Name</p>
-              <p >{userProfile.username}</p>
+              <p >{userProfile.name}</p>
             </div>
             <div className="space-y-4">
               <p className="flex items-center gap-2 text-lg font-semibold"><Mail className="w-4 h-4 text-gray-500" />Email</p>

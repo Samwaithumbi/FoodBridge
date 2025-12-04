@@ -32,7 +32,10 @@ export default function Login() {
       setIsLoading(true)
 
       const res =await axios.post("http://localhost:3000/api/auth/login", formData)
-      localStorage.setItem("userData",JSON.stringify(res.data))
+      const currentUser = JSON.parse(localStorage.getItem("userData"));
+        const updated = { ...currentUser, ...res.data };
+        localStorage.setItem("userData", JSON.stringify(updated));
+
       localStorage.setItem("token", res.data.token)
       console.log(res.data);
       if (res.status === 200 && res.data.role =="Donor" ) {

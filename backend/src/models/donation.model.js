@@ -1,11 +1,16 @@
 const mongoose = require('mongoose')
 
+//donation schema
 const donationSchema = new mongoose.Schema({
-  request: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Requests"
-  },
-  
+    donor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    request: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Requests"
+    },
     title:{
         type:String,
         required: [true, 'Please enter a title for the food donation']
@@ -34,12 +39,6 @@ const donationSchema = new mongoose.Schema({
         enum: ["Pending","Available", "Claimed","Rejected","Completed","Expired"],
         default: "Pending"
       },      
-      
-      donor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-      }
 }, {timestamps: true})
 
 donationSchema.index({ expiryDate: 1 });

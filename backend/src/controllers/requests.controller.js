@@ -112,7 +112,14 @@ const approveRequest = async (req, res) => {
     request.reqStatus = "Approved";
     await request.save();
 
-       
+    await Notification.create({
+      user: request.user,
+      title: "Request Approved",
+      message: `Your request for ${request.itemName} has been approved.`,
+      type: "request",
+      relatedId: request._id,
+    });
+    
 
     res.status(200).json({
       message: "Request approved",
@@ -136,6 +143,14 @@ const rejectRequest = async (req, res) => {
 
     request.reqStatus = "Rejected";
     await request.save();
+
+    await Notification.create({
+      user: request.user,
+      title: "Request Rejected",
+      message: `Your request for ${request.itemName} has been rejected.`,
+      type: "request",
+      relatedId: request._id,
+    });
 
     res.status(200).json({
       message: "Request rejected",

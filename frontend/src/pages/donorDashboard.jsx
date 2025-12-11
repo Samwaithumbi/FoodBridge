@@ -20,8 +20,7 @@ export default function Layout() {
         <div >
           <Nav name={userData.name} userId={userData.userId}/>
         </div>
-  
-        
+
         <section >
           <DonorWelcome  donations={donations} setDonations={setDonations} name={userData.name} />
         </section>

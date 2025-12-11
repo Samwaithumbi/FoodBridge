@@ -1,5 +1,6 @@
 const User = require('../models/auth.model') 
 const Donation = require('../models/donation.model')
+const Notifications = require('../models/notification.model')
  
  //getting all users
  const getUsers = async (req, res) => {
@@ -124,16 +125,44 @@ const Donation = require('../models/donation.model')
   //approve donation
   const approveDonation = async (req, res, next) => {
     try {
-      const donation = await Donation.findById(req.params.id);
-      if (!donation) return res.status(404).json({ message: "Donation not found" });
+      const donation = await Donation.findById(req.params.id).populate("donor");
   
-      // Update the correct field
-      donation.donationStatus = "Available"; 
+      if (!donation) {
+        return res.status(404).json({ message: "Donation not found" });
+      }
+  
+      // Prevent repeated approvals
+      if (donation.donationStatus === "Available") {
+        return res.status(400).json({
+          message: "This donation is already approved.",
+        });
+      }
+  
+      // Approve donation
+      donation.donationStatus = "Available";
       await donation.save();
   
+      // CHECK: Avoid duplicate notifications
+      const exists = await Notifications.findOne({
+        user: donation.donor._id,
+        type: "Donation",
+        relatedId: donation._id,
+      });
+  
+      if (!exists) {
+        await Notifications.create({
+          user: donation.donor._id,
+          title: "Donation Approved",
+          message: `Your donation "${donation.title}" has been approved.`,
+          type: "Donation",
+          relatedId: donation._id,
+        });
+      }
+  
       res.status(200).json({ message: "Donation approved", donation });
+  
     } catch (err) {
-      console.error("Approve donation error:", err); // <-- log the error
+      console.error("Approve donation error:", err);
       res.status(500).json({ message: "Internal server error", error: err.message });
     }
   };
@@ -147,6 +176,23 @@ const Donation = require('../models/donation.model')
     
         donation.donationStatus = "Rejected";
         await donation.save();
+
+        const exists = await Notifications.findOne({
+          user: donation.donor._id,
+          type: "Donation",
+          relatedId: donation._id,
+        });
+    
+        if (!exists) {
+          await Notifications.create({
+            user: donation.donor._id,
+            title: "Donation Rejected",
+            message: `Your donation "${donation.title}" has been Rejected.`,
+            type: "Donation",
+            relatedId: donation._id,
+          });
+        }
+
         res.json({ message: "Donation rejected", donation });
       } catch (err) {
         next(err);

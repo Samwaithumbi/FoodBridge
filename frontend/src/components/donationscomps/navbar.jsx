@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import NotificationBell from "../notificationsComps/notificationIcon";
 
 const Nav = ({username,userId}) => {
   const navigate = useNavigate()
@@ -43,6 +44,7 @@ const Nav = ({username,userId}) => {
                 {username}
               </span>
             </div>
+            <NotificationBell/>
 
             {/* Logout Button */}
             <button 

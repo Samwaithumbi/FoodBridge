@@ -6,6 +6,7 @@ const profileRoutes = require('../backend/src/routes/profile.routes')
 const donationsRoutes = require('./src/routes/donations.routes')
 const requestsRoutes = require("../backend/src/routes/requests.routes")
 const adminRoutes = require('../backend/src/routes/admin.routes')
+const notificationRoutes = require('../backend/src/routes/notification.routes')
 const cors = require("cors")
 const errorHandler = require('./src/middleware/errorHandler')
 dotenv.config()
@@ -28,6 +29,7 @@ app.use('/api/profile', profileRoutes)
 app.use('/api/donations', donationsRoutes)
 app.use('/api/requests', requestsRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 // Connect to the database and start the server
 connectDb().then(()=>{

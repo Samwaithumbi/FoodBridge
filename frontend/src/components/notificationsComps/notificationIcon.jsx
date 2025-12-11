@@ -61,33 +61,44 @@ const NotificationBell = () => {
 
       {/* Notifications Dropdown */}
       {isBellClicked && (
-        <div className="absolute pl-10 right-0 mt-2 w-80 bg-white shadow-xl rounded-lg border z-50 max-h-96 overflow-y-auto">
-            <div className="flex items-center justify-between">
-               <h3 className="p-3 border-b text-lg font-semibold"> Notifications</h3>
-              <button className="text-red-600" onClick={handleRead}>Mark as all Read</button>
-            </div>
-          
-
-          {notifications.length === 0 ? (
-            <p className="p-4 text-sm text-gray-500">No notifications yet.</p>
-          ) : (
-            notifications.map((n) => (
-              <div
-                key={n._id}
-                className={`p-3 text-sm border-b ${
-                  n.isRead ? "bg-gray-100" : "bg-yellow-50"
-                }`}
-              >
-                <p className="font-bold text-gray-800">{n.title}</p>
-                <p className="text-gray-600">{n.message}</p>
-                <small className="text-gray-500 block mt-1">
-                  {new Date(n.createdAt).toLocaleString()}
-                </small>
-              </div>
-            ))
-          )}
-        </div>
-      )}
+       <div
+       className="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto"
+     >
+       {/* Header */}
+       <div className="flex items-center justify-between px-4 py-3 border-b">
+         <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+         <button
+           className="text-sm text-red-600 hover:text-red-700 font-medium"
+           onClick={handleRead}
+         >
+           Mark all as Read
+         </button>
+       </div>
+     
+       {/* Body */}
+       {notifications.length === 0 ? (
+         <p className="p-4 text-sm text-gray-500 text-center">
+           No notifications yet.
+         </p>
+       ) : (
+         notifications.map((n) => (
+           <div
+             key={n._id}
+             className={`px-4 py-3 text-sm border-b transition 
+               ${n.isRead ? "bg-gray-50" : "bg-yellow-50"} 
+               hover:bg-gray-100 cursor-pointer`}
+           >
+             <p className="font-semibold text-gray-800">{n.title}</p>
+             <p className="text-gray-600 mt-0.5">{n.message}</p>
+     
+             <small className="text-gray-500 block mt-2 text-xs">
+               {new Date(n.createdAt).toLocaleString()}
+             </small>
+           </div>
+         ))
+       )}
+     </div>
+      )}     
     </div>
   );
 };

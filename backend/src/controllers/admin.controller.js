@@ -123,26 +123,24 @@ const Notifications = require('../models/notification.model')
   };
   
   //approve donation
-  const approveDonation = async (req, res, next) => {
+  const approveDonation = async (req, res) => {
     try {
-      const donation = await Donation.findById(req.params.id).populate("donor");
+      const donation = await Donation.findById(req.params.id).populate("donor", "name");
   
       if (!donation) {
         return res.status(404).json({ message: "Donation not found" });
       }
   
-      // Prevent repeated approvals
-      if (donation.donationStatus === "Available") {
-        return res.status(400).json({
-          message: "This donation is already approved.",
-        });
+      // If already approved
+      if (donation.donationStatus === "Approved") {
+        return res.status(400).json({ message: "Donation already approved" });
       }
   
-      // Approve donation
-      donation.donationStatus = "Available";
+      // Set approved
+      donation.donationStatus = "Approved";
       await donation.save();
   
-      // CHECK: Avoid duplicate notifications
+      // Check duplicate notification
       const exists = await Notifications.findOne({
         user: donation.donor._id,
         type: "Donation",
@@ -155,17 +153,21 @@ const Notifications = require('../models/notification.model')
           title: "Donation Approved",
           message: `Your donation "${donation.title}" has been approved.`,
           type: "Donation",
-          relatedId: donation._id,
+          relatedId: donation._id
         });
       }
   
-      res.status(200).json({ message: "Donation approved", donation });
+      res.status(200).json({
+        message: "Donation approved",
+        donation
+      });
   
     } catch (err) {
       console.error("Approve donation error:", err);
-      res.status(500).json({ message: "Internal server error", error: err.message });
+      res.status(500).json({ message: err.message });
     }
   };
+  
   
 
 //reject donation

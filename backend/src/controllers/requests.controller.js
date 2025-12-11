@@ -1,6 +1,6 @@
 const Requests = require("../models/requests.model");
 const Donation = require("../models/donation.model");
-
+const Notifications = require("../models/notification.model")
 
 // Create request
 const createRequest = async (req, res, next) => { 
@@ -55,6 +55,7 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
+//get requesting by ID
 const getRequestById = async (req, res) => {
   try {
     const request = await Requests.findById(req.params.id)
@@ -72,9 +73,6 @@ const getRequestById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 // update request
 const updateRequest = async (req, res) => {
@@ -102,55 +100,87 @@ const updateRequest = async (req, res) => {
   }
 };
 
-const approveRequest = async (req, res) => {
+//approvin request
+const approveRequest = async (req, res, next) => {
   try {
-    const request = await Requests.findById(req.params.id);
+    const { id } = req.params;
 
-    if (!request)
+    // 1. Find request
+    const request = await Requests.findById(id).populate("donor");
+
+    if (!request) {
       return res.status(404).json({ message: "Request not found" });
+    }
 
+    // 2. Prevent double approval
+    if (request.reqStatus === "Approved") {
+      return res.status(400).json({ message: "Request already approved" });
+    }
+
+    // 3. Approve request
     request.reqStatus = "Approved";
     await request.save();
 
-    await Notification.create({
-      user: request.user,
-      title: "Request Approved",
-      message: `Your request for ${request.itemName} has been approved.`,
-      type: "request",
-      relatedId: request._id,
+    // 4. Check for existing notification
+    const exists = await Notifications.findOne({
+      type: "Request",
+      relatedId: id,
     });
-    
+
+    // 5. Create notification if not exists
+    if (!exists) {
+      await Notifications.create({
+        user: request.donor._id,
+        title: "Request Approved",
+        message: `Your request has been approved by the admin.`,
+        type: "Request",
+        relatedId: id,
+      });
+    }
 
     res.status(200).json({
-      message: "Request approved",
-      request
+      message: "Request approved successfully",
+      request,
     });
-
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log("Approve error:", error);
+    next(error);
   }
 };
 
-
-
-//reject donation
+//rejecting request
 const rejectRequest = async (req, res) => {
   try {
-    const request = await Requests.findById(req.params.id);
+    const request = await Requests.findById(req.params.id).populate("donor");
 
-    if (!request)
+    if (!request) {
       return res.status(404).json({ message: "Request not found" });
+    }
 
+    // Prevent double rejection
+    if (request.reqStatus === "Rejected") {
+      return res.status(400).json({ message: "Request is already rejected" });
+    }
+
+    // Update status
     request.reqStatus = "Rejected";
     await request.save();
 
-    await Notification.create({
-      user: request.user,
-      title: "Request Rejected",
-      message: `Your request for ${request.itemName} has been rejected.`,
-      type: "request",
-      relatedId: request._id,
+    // Check if notification exists
+    const existingNotification = await Notifications.findOne({
+      type: "Request",
+      relatedId: request._id
     });
+
+    if (!existingNotification) {
+      await Notifications.create({
+        user: request.donor._id,                   // The donor receives the rejection notice
+        title: "Request Rejected",
+        message: `Your request has been rejected by the admin.`,
+        type: "Request",                           // Correct enum
+        relatedId: request._id
+      });
+    }
 
     res.status(200).json({
       message: "Request rejected",
@@ -158,10 +188,12 @@ const rejectRequest = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("Reject error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
+//deleting request
 const deleteRequest = async (req, res) => {
   try {
     const id = req.params.id;

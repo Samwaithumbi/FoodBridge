@@ -2,6 +2,7 @@ import axios from "axios";
 import { CiCalendarDate } from "react-icons/ci";
 import { MdCancel, MdDelete, MdEdit } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
+import { toast } from "react-toastify";
 
 const ViewRequest = ({setViewRequest, requestDetails, token}) => {
 
@@ -11,36 +12,31 @@ const ViewRequest = ({setViewRequest, requestDetails, token}) => {
       const res = await axios.patch(
         `http://localhost:3000/api/requests/${id}/approve`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      console.log(res.data);
-     setViewRequest(false);
+      toast.success(res.data.message);
+      refreshRequests?.();
+      setViewRequest(false);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
-
-  //rejecting donation
+  
   const handleReject = async (id) => {
     try {
       const res = await axios.patch(
         `http://localhost:3000/api/requests/${id}/reject`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      console.log(res.data);
-    
-     setViewRequest(false);
+      toast.success(res.data.message);
+      refreshRequests?.();
+      setViewRequest(false);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+  
   
     return ( 
         <>

@@ -1,53 +1,75 @@
+const mongoose = require("mongoose");
 const Requests = require("../models/requests.model");
-const Donation = require("../models/donation.model");
-const Notifications = require("../models/notification.model")
+const Donations = require("../models/donation.model");
+const Notifications = require("../models/notification.model");
 
-// Create request
-const createRequest = async (req, res, next) => { 
+/**
+ * CREATE REQUEST
+ * Beneficiary → Donor
+ */
+const createRequest = async (req, res, next) => {
   try {
     const { donationId, message } = req.body;
     const beneficiaryId = req.user._id;
 
-    const donation = await Donation.findById(donationId);
+    const donation = await Donations.findById(donationId);
     if (!donation)
       return res.status(404).json({ message: "Donation not found" });
 
-    const existing = await Requests.findOne({
-      donation: donationId,
-      beneficiary: beneficiaryId,
-    });
+    // ❌ Block if donation already requested
+    if (donation.request) {
+      return res
+        .status(400)
+        .json({ message: "This donation already has a pending request." });
+    }
 
-    if (existing) {
-      return res.status(400).json({ message: "You have already requested this donation." });
+    // ❌ Block if donation not available
+    if (donation.donationStatus !== "Available") {
+      return res
+        .status(400)
+        .json({ message: "This donation is not available for requests." });
     }
 
     const newRequest = await Requests.create({
       donor: donation.donor,
       beneficiary: beneficiaryId,
-      donation: donationId, 
+      donation: donationId,
       message,
       reqStatus: "Pending",
     });
 
-    // Correct ID usage here
-    await Donation.findByIdAndUpdate(donationId, {
-      request: newRequest._id
+    // ✅ Correct linking
+    donation.request = newRequest._id;
+    donation.donationStatus = "Assigned";
+    await donation.save();
+
+    // 🔔 Notify donor
+    await Notifications.create({
+      user: donation.donor,
+      title: "Donation Requested",
+      message: "A beneficiary has requested your donation.",
+      type: "Donation",
+      relatedId: donation._id,
+      isRead: false,
     });
 
     res.status(201).json(newRequest);
   } catch (error) {
+    console.error("CREATE REQUEST ERROR:", error);
     next(error);
   }
 };
 
 
-// get all requests (admin)
+/**
+ * GET ALL REQUESTS (ADMIN)
+ */
 const getPendingRequests = async (req, res) => {
   try {
     const requests = await Requests.find()
       .populate("donor", "name email location")
       .populate("beneficiary", "name email location")
-      .populate("donation", "title quantity location expiryDate, request")
+      .populate("donation", "title quantity location expiryDate donationStatus");
 
     res.status(200).json(requests);
   } catch (error) {
@@ -55,14 +77,15 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
-//get requesting by ID
+/**
+ * GET REQUEST BY ID
+ */
 const getRequestById = async (req, res) => {
   try {
     const request = await Requests.findById(req.params.id)
-      .populate("donor", "name email location")
-      .populate("beneficiary", "name email location")
-      .populate("donation", "title quantity location expiryDate")
-  
+      .populate("donor", "name email")
+      .populate("beneficiary", "name email")
+      .populate("donation", "title quantity location expiryDate donationStatus");
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
@@ -71,6 +94,120 @@ const getRequestById = async (req, res) => {
     res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * APPROVE REQUEST (ADMIN)
+ */
+const approveRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const request = await Requests.findById(req.params.id)
+      .populate("beneficiary", "_id")
+      .populate({
+        path: "donation",
+        populate: { path: "donor", select: "_id" }
+      })
+      .session(session);
+
+    if (!request) return res.status(404).json({ message: "Request not found" });
+    if (request.reqStatus === "Approved") return res.status(400).json({ message: "Already approved" });
+
+    // 1. Approve request
+    request.reqStatus = "Approved";
+    await request.save({ session });
+
+    // 2. Update donation
+    request.donation.donationStatus = "Assigned"; // Assigned to this beneficiary
+    await request.donation.save({ session });
+
+    // 🔔 Beneficiary: Request approved
+    await Notifications.create([{
+      user: request.beneficiary._id,
+      title: "Request Approved",
+      message: "Your food request has been approved.",
+      type: "Request",
+      relatedId: request._id
+    }], { session });
+
+    // 🔔 Donor: Donation assigned
+    await Notifications.create([{
+      user: request.donation.donor._id,
+      title: "Donation Assigned",
+      message: "Your donation has been assigned to a beneficiary.",
+      type: "Donation",
+      relatedId: request.donation._id
+    }], { session });
+
+    await session.commitTransaction();
+    res.status(200).json(request);
+
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
+  }
+};
+
+
+/**
+ * REJECT REQUEST
+ */
+const rejectRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const request = await Requests.findById(req.params.id)
+      .populate("beneficiary", "_id")
+      .populate({
+        path: "donation",
+        populate: { path: "donor", select: "_id" }
+      })
+      .session(session);
+
+    if (!request) return res.status(404).json({ message: "Request not found" });
+    if (request.reqStatus === "Rejected") return res.status(400).json({ message: "Already rejected" });
+
+    // 1. Reject request
+    request.reqStatus = "Rejected";
+    await request.save({ session });
+
+    // 2. Reset donation
+    request.donation.donationStatus = "Available";
+    request.donation.request = null;
+    await request.donation.save({ session });
+
+    // 🔔 Beneficiary: Request rejected
+    await Notifications.create([{
+      user: request.beneficiary._id,
+      title: "Request Rejected",
+      message: "Your food request has been rejected.",
+      type: "Request",
+      relatedId: request._id
+    }], { session });
+
+    // 🔔 Donor: Donation now available
+    await Notifications.create([{
+      user: request.donation.donor._id,
+      title: "Donation Available",
+      message: "Your donation is now available for requests again.",
+      type: "Donation",
+      relatedId: request.donation._id
+    }], { session });
+
+    await session.commitTransaction();
+    res.status(200).json({ message: "Request rejected" });
+
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -100,128 +237,31 @@ const updateRequest = async (req, res) => {
   }
 };
 
-//approvin request
-const approveRequest = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    // 1. Find request
-    const request = await Requests.findById(id).populate("donor");
-
-    if (!request) {
-      return res.status(404).json({ message: "Request not found" });
-    }
-
-    // 2. Prevent double approval
-    if (request.reqStatus === "Approved") {
-      return res.status(400).json({ message: "Request already approved" });
-    }
-
-    // 3. Approve request
-    request.reqStatus = "Approved";
-    await request.save();
-
-    // 4. Check for existing notification
-    const exists = await Notifications.findOne({
-      type: "Request",
-      relatedId: id,
-    });
-
-    // 5. Create notification if not exists
-    if (!exists) {
-      await Notifications.create({
-        user: request.donor._id,
-        title: "Request Approved",
-        message: `Your request has been approved by the admin.`,
-        type: "Request",
-        relatedId: id,
-      });
-    }
-
-    res.status(200).json({
-      message: "Request approved successfully",
-      request,
-    });
-  } catch (error) {
-    console.log("Approve error:", error);
-    next(error);
-  }
-};
-
-//rejecting request
-const rejectRequest = async (req, res) => {
-  try {
-    const request = await Requests.findById(req.params.id).populate("donor");
-
-    if (!request) {
-      return res.status(404).json({ message: "Request not found" });
-    }
-
-    // Prevent double rejection
-    if (request.reqStatus === "Rejected") {
-      return res.status(400).json({ message: "Request is already rejected" });
-    }
-
-    // Update status
-    request.reqStatus = "Rejected";
-    await request.save();
-
-    // Check if notification exists
-    const existingNotification = await Notifications.findOne({
-      type: "Request",
-      relatedId: request._id
-    });
-
-    if (!existingNotification) {
-      await Notifications.create({
-        user: request.donor._id,                   // The donor receives the rejection notice
-        title: "Request Rejected",
-        message: `Your request has been rejected by the admin.`,
-        type: "Request",                           // Correct enum
-        relatedId: request._id
-      });
-    }
-
-    res.status(200).json({
-      message: "Request rejected",
-      request
-    });
-
-  } catch (error) {
-    console.log("Reject error:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
-//deleting request
+/**
+ * DELETE REQUEST
+ */
 const deleteRequest = async (req, res) => {
   try {
-    const id = req.params.id;
-
-    const request = await Requests.findById(id);
+    const request = await Requests.findById(req.params.id);
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    await Requests.findByIdAndDelete(id);
+    await Requests.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({ message: "Request deleted successfully" });
-
+    res.status(200).json({ message: "Request deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 module.exports = {
   createRequest,
   getPendingRequests,
   getRequestById,
-  updateRequest,
   approveRequest,
   rejectRequest,
+  updateRequest,
   deleteRequest
 };

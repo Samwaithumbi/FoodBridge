@@ -1,51 +1,47 @@
-const Notifications = require("../models/notification.model")
+const Notifications = require("../models/notification.model");
 
-const getNotificatons = async (req, res, next) => {
-   try {
-     const userId = req.user.id || req.user._id || req.user;
- 
-     const notifications = await Notifications.find({ user: userId });
- 
-     res.status(200).json({ notifications });
-   } catch (error) {
-     next(error);
-   }
- };
- 
-
+/**
+ * GET MY NOTIFICATIONS
+ */
 const getMyNotifications = async (req, res, next) => {
-   try {
-     console.log("REQ.USER:", req.user);
- 
-     const userId = req.user.id || req.user._id || req.user;
- 
-     const notifications = await Notifications
-       .find({ user: userId })
-       .sort({ createdAt: -1 });
- 
-     res.status(200).json({ notifications });
-   } catch (error) {
-     console.log(error);
-     next(error);
-   }
- };
- 
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    const notifications = await Notifications.find({
+      user: req.user._id
+    })
+      .sort({ createdAt: -1 })
+      .lean();
 
- const markAllAsRead = async (req, res, next) => {
-   try {
-     const userId = req.user.id || req.user._id || req.user;
- 
-     await Notifications.updateMany(
-       { user: userId, isRead: false },
-       { isRead: true }
-     );
- 
-     res.json({ message: "All notifications marked as read" });
-   } catch (error) {
-     next(error);
-   }
- };
- 
+    res.status(200).json({ notifications });
+  } catch (error) {
+    next(error);
+  }
+};
 
-module.exports = {getNotificatons, getMyNotifications, markAllAsRead}
+/**
+ * MARK ALL AS READ
+ */
+const markAllAsRead = async (req, res, next) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await Notifications.updateMany(
+      { user: req.user._id, isRead: false },
+      { $set: { isRead: true } }
+    );
+
+    res.status(200).json({ message: "All notifications marked as read" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getMyNotifications,
+  markAllAsRead
+};

@@ -1,145 +1,154 @@
 import axios from "axios";
 import { CiCalendarDate } from "react-icons/ci";
-import { MdCancel, MdDelete, MdEdit } from "react-icons/md";
+import { MdCancel, MdDelete } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
 
-const ViewDonation = ({setViewDonation, donationDetails, token, refreshDonations}) => {
+const ViewDonation = ({
+  setViewDonation,
+  donationDetails,
+  token,
+  refreshDonations,
+}) => {
+  const donation = donationDetails?.donation;
 
-  // approing donation
-  const handleApprove = async (id) => {
-    try {
-      const res = await axios.patch(
-        `http://localhost:3000/api/admin/donations/${id}/approve`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-  
-      console.log(res.data);
-      if (typeof refreshDonations === "function") {
-        await refreshDonations();
-      } else {
-        console.warn("refreshDonations is not a function:", refreshDonations);
-      }
-     setViewDonation(false);
-    } catch (error) {
-      console.log(error);
-    }
+  if (!donation) return null;
+
+  const authHeader = {
+    headers: { Authorization: `Bearer ${token}` },
   };
 
-  //rejecting donation
-  const handleReject = async (id) => {
-    try {
-      const res = await axios.patch(
-        `http://localhost:3000/api/admin/donations/${id}/reject`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-  
-      console.log(res.data);
-      if (typeof refreshDonations === "function") {
-        await refreshDonations();
-      } else {
-        console.warn("refreshDonations is not a function:", refreshDonations);
-      }
-     setViewDonation(false);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleApprove = async () => {
+    await axios.patch(
+      `http://localhost:3000/api/admin/donations/${donation._id}/approve`,
+      {},
+      authHeader
+    );
+    await refreshDonations?.();
+    setViewDonation(false);
   };
-  
-    return ( 
-        <>
-             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
 
-            {/* Header */}
-            <div className="flex justify-between">
-              <div>
-                <h2 className="text-2xl font-bold">Donation Details</h2>
-                <p className="font-medium">View and Manage donaation Details</p>
-              </div>
-              <button 
-               onClick={()=>setViewDonation(false)}
-              >
-                <MdCancel size={22} />
-              </button>
-            </div>
+  const handleReject = async () => {
+    await axios.patch(
+      `http://localhost:3000/api/admin/donations/${donation._id}/reject`,
+      {},
+      authHeader
+    );
+    await refreshDonations?.();
+    setViewDonation(false);
+  };
 
-            {/* Profile */}
-            <div className="flex gap-2 bg-gray-50 p-3 rounded-lg mb-4">
-              <div>
-                <h3 className="font-medium text-2xl">{donationDetails?.donor}</h3>
-                <p>{donationDetails.title }</p>
-              </div>
-            </div>
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this donation?")) return;
 
-            {/* User Info */}
-            <div className="grid grid-cols-2 gap-3">
-              
-              <div>
-                <p className="text-lg text-gray-500">Description</p>
-                <p className="flex items-center gap-1 font-semibold">{donationDetails.description}</p>
-              </div>
+    await axios.delete(
+      `http://localhost:3000/api/admin/donations/${donation._id}`,
+      authHeader
+    );
+    await refreshDonations?.();
+    setViewDonation(false);
+  };
 
-              <div>
-                <p className="text-lg text-gray-500">Quantity</p>
-                <p className="font-semibold">{donationDetails.quantity}</p>
-              </div>
+  const statusColor = {
+    Available: "bg-green-100 text-green-700",
+    Pending: "bg-yellow-100 text-yellow-700",
+    Rejected: "bg-red-100 text-red-700",
+    Claimed: "bg-blue-100 text-blue-700",
+    Expired: "bg-gray-100 text-gray-600",
+  };
 
-              <div>
-                <p className="text-lg text-gray-500">Location</p>
-                <p className="flex items-center gap-1 font-semibold">{donationDetails.location}</p>
-              </div>
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={() => setViewDonation(false)}
+    >
+      <div
+        className="w-[480px] bg-white rounded-2xl shadow-xl p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-xl font-bold">Donation Details</h2>
+            <span
+              className={`inline-block mt-1 px-2 py-1 rounded text-sm ${statusColor[donation.donationStatus]}`}
+            >
+              {donation.donationStatus}
+            </span>
+          </div>
+          <button onClick={() => setViewDonation(false)}>
+            <MdCancel size={22} />
+          </button>
+        </div>
 
-              <div>
-                <p className="text-lg text-gray-500">Join Date</p>
-                <p className="flex items-center gap-1 font-semibold">
-                  <CiCalendarDate className="text-gray-500" />
-                  {new Date(donationDetails.expiryDate).toLocaleDateString()}
-                </p>
-              </div>
+        {/* Image */}
+        {donation.image && (
+          <img
+            src={donation.image}
+            alt={donation.title}
+            className="w-full h-40 object-cover rounded-lg mb-4"
+          />
+        )}
 
-              <div>
-                <p className="text-lg text-gray-500">Status</p>
-                <p className="font-semibold">{donationDetails.donationStatus}</p>
-              </div>
-            </div>
+        {/* Info */}
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-gray-500">Donor</p>
+            <p className="font-semibold">{donation.donor?.name}</p>
+          </div>
 
-            {/* ACTIONS */}
-            <div className="flex justify-between gap-3 mt-6">
-              <button
-                onClick={() => {
-                  handleDelete(donationDetails._id);
-                 
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg flex gap-1 items-center"
-              >
-                <MdDelete size={18} />
-              </button>
+          <div>
+            <p className="text-gray-500">Quantity</p>
+            <p className="font-semibold">{donation.quantity}</p>
+          </div>
 
-              <button
-                onClick={() => handleReject(donationDetails._id)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
-              >
-                <MdCancel size={18} /> Reject
-              </button>
+          <div>
+            <p className="text-gray-500">Location</p>
+            <p className="font-semibold">{donation.location}</p>
+          </div>
 
-              <button
-              
-                onClick={() => handleApprove(donationDetails._id)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
-              >
-                <TiTick size={18} /> Approve
-              </button>
-            </div>
+          <div>
+            <p className="text-gray-500">Expiry Date</p>
+            <p className="flex items-center gap-1 font-semibold">
+              <CiCalendarDate />
+              {new Date(donation.expiryDate).toLocaleDateString()}
+            </p>
+          </div>
+
+          <div className="col-span-2">
+            <p className="text-gray-500">Description</p>
+            <p className="font-semibold">{donation.description}</p>
           </div>
         </div>
-        </>
-     );
-}
- 
+
+        {/* Actions */}
+        <div className="flex justify-between gap-2 mt-6">
+          <button
+            onClick={handleDelete}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg"
+          >
+            <MdDelete />
+          </button>
+
+          {donation.donationStatus === "Pending" && (
+            <>
+              <button
+                onClick={handleReject}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg"
+              >
+                Reject
+              </button>
+              <button
+                onClick={handleApprove}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg"
+              >
+                <TiTick /> Approve
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default ViewDonation;

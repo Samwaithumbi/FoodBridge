@@ -128,7 +128,7 @@ const approveRequest = async (req, res, next) => {
     await Notifications.create([{
       user: request.beneficiary._id,
       title: "Request Approved",
-      message: "Your food request has been approved.",
+      message: `Your ${request.donation.title} request has been approved.Wait for more info`,
       type: "Request",
       relatedId: request._id
     }], { session });
@@ -137,7 +137,7 @@ const approveRequest = async (req, res, next) => {
     await Notifications.create([{
       user: request.donation.donor._id,
       title: "Donation Assigned",
-      message: "Your donation has been assigned to a beneficiary.",
+      message: `Your ${request.donation.title} has been assigned to a ${request.donation.beneficiary._id}.Confirm Availabilty`,
       type: "Donation",
       relatedId: request.donation._id
     }], { session });
@@ -186,7 +186,7 @@ const rejectRequest = async (req, res, next) => {
     await Notifications.create([{
       user: request.beneficiary._id,
       title: "Request Rejected",
-      message: "Your food request has been rejected.",
+      message: `Your ${request.donation.title} request has been rejected.`,
       type: "Request",
       relatedId: request._id
     }], { session });
@@ -195,7 +195,7 @@ const rejectRequest = async (req, res, next) => {
     await Notifications.create([{
       user: request.donation.donor._id,
       title: "Donation Available",
-      message: "Your donation is now available for requests again.",
+      message: `Your ${request.donation.title} is now available for requests again.`,
       type: "Donation",
       relatedId: request.donation._id
     }], { session });

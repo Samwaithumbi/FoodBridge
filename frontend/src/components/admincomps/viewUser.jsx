@@ -49,7 +49,7 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
     <>
       {/* MAIN USER VIEW MODAL */}
       {!editUser && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
 
             {/* Header */}

@@ -20,7 +20,7 @@ const App = () => {
       <Route path='/donor-dashboard' element={<DonorDash/>} />
       <Route path='/beneficiary-dashboard' element={<BeneficiaryDash/>} />
       <Route path='/profile' element={<ProfilePage/>} />
-      <Route path='/admin' element={<Admin/>}/>
+      <Route path='/admin-dashboard' element={<Admin/>}/>
     </Routes>
     <ToastContainer
          position="top-right"

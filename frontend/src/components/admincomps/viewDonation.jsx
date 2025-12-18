@@ -1,4 +1,4 @@
-import api from "../axios"; // centralized axios
+import api from "../../apis/axios"
 import { CiCalendarDate } from "react-icons/ci";
 import { MdCancel, MdDelete } from "react-icons/md";
 import { TiTick } from "react-icons/ti";

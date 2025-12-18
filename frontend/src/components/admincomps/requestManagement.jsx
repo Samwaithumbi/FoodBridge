@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import ViewRequest from "./viewRequest";
-import api from "../axios"; // centralized axios instance
+import api from "../../apis/axios"
 
 const RequestManagement = ({ requests, token }) => {
   const [viewRequest, setViewRequest] = useState(false);

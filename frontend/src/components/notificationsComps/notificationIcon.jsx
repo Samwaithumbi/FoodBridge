@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaBell } from "react-icons/fa";
-import api from "../axios"; // your centralized axios instance
+import api from "../../apis/axios"; 
 
 const NotificationBell = () => {
   const [isBellClicked, setIsBellClicked] = useState(false);

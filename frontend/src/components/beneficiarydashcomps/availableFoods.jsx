@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import api from "../axios"; // centralized axios instance
+import api from "../../apis/axios"; 
 
 const AvailableFood = () => {
   const [availableDonations, setAvailableDonations] = useState([]);

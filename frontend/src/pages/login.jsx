@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import api from "../axios"; // centralized axios instance
+import api from "../apis/axios"
 
 export default function Login() {
   const navigate = useNavigate();

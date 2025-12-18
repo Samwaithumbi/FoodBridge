@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import api from "../axios"; // centralized axios instance
+import api from "../apis/axios"
 
 const Register = () => {
   const navigate = useNavigate();

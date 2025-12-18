@@ -1,7 +1,7 @@
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import { useState, useEffect } from "react";
-import api from "../axios"; // centralized axios instance
+import api from "../../apis/axios"
 import ViewDonation from "./viewDonation";
 
 const DonationManagement = ({ allDonations, setAllDonations, token, refreshDonations }) => {

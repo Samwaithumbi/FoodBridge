@@ -4,7 +4,7 @@ import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
 import { GoCircleSlash } from "react-icons/go";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import api from "../../axios"; // centralized axios instance
+import api from "../../apis/axios"; // centralized axios instance
 import getInitials from "../../utils/avatar";
 
 const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {

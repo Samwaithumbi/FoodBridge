@@ -1,7 +1,7 @@
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import api from "./axios"; // centralized axios instance
+import api from "../../apis/axios"; 
 
 const AddDonation = () => {
   const [addDonation, setAddDonation] = useState(false);

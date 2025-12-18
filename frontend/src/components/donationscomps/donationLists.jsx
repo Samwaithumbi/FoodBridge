@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "./axios"; // centralized axios instance
+import api from "../../apis/axios"; 
 
 const Donations = ({ donations, setDonations }) => {
   const [isLoading, setIsLoading] = useState(true);

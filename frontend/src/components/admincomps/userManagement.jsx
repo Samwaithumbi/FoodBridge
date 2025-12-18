@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import ViewUser from "./viewUser";
-import api from "../axios"; // centralized axios instance
+import api from "../../apis/axios"
 
 const AdminUsersTable = ({ users, setUsers, token }) => {
   const [userDetails, setUserDetails] = useState({});

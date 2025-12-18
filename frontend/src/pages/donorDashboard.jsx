@@ -13,16 +13,16 @@ export default function Layout() {
     expiryDate: "",
   })
 
-  const userData=JSON.parse(localStorage.getItem("userData"))
+  const userData=JSON.parse(localStorage.getItem("userData")) || {}
   return (
   <>
     <main >
         <div >
-          <Nav name={userData.name} userId={userData.userId}/>
+          <Nav name={userData?.name} userId={userData?.userId}/>
         </div>
 
         <section >
-          <DonorWelcome  donations={donations} setDonations={setDonations} name={userData.name} />
+          <DonorWelcome  donations={donations} setDonations={setDonations} name={userData?.name} />
         </section>
         <section className="mb-6">
           <Stats />

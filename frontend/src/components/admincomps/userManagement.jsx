@@ -1,159 +1,152 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import ViewUser from "./viewUser";
+import api from "../axios"; // centralized axios instance
 
-const AdminUsersTable = ({ users,setUsers, token }) => {
-
-  const [userDetails, setUserDetails]= useState("")
-  const [viewUser, setViewUser]= useState(false)
+const AdminUsersTable = ({ users, setUsers, token }) => {
+  const [userDetails, setUserDetails] = useState({});
+  const [viewUser, setViewUser] = useState(false);
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState(""); 
+  const [role, setRole] = useState("");
 
+  // Fetch users with search/role filters
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/admin/users", {
-        params: {
-          q: search,
-          role: role,      
-        },
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await api.get("/api/admin/users", {
+        params: { q: search, role },
+        headers: { Authorization: `Bearer ${token}` },
       });
-  
       setUsers(res.data.users);
     } catch (error) {
       console.log("Failed to fetch users", error);
     }
   };
-  
+
   useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchUsers();
-    }, 400); // debounce typing
-  
+    const delay = setTimeout(fetchUsers, 400); // debounce typing
     return () => clearTimeout(delay);
   }, [search, role]);
-  
 
-  //viewing a user info
-  const handleUser =async(id)=>{
+  // View user details
+  const handleUser = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/admin/users/${id}`,{
-        headers:{Authorization:`Bearer ${token}`}
-      })
+      const res = await api.get(`/api/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setUserDetails(res.data);
     } catch (error) {
-      console.log("Failed to fetch user info");
+      console.log("Failed to fetch user info", error);
     }
-  }
+  };
 
-  // deleting a user
-    const handleDelete = async (id) => {
-      try {
-        await axios.delete(`http://localhost:3000/api/admin/users/${id}`,{
-          headers:{Authorization:`Bearer ${token}`}
-        });
-        console.log("Deleted user:", id);
-        setUsers(prev => prev.filter(user => user._id !== id));
-      } catch (error) {
-        console.log("Failed to delete:", error);
-      }
-    };
-  
+  // Delete user
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/api/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers((prev) => prev.filter((user) => user._id !== id));
+      if (viewUser) setViewUser(false); // close modal if open
+    } catch (error) {
+      console.log("Failed to delete user", error);
+    }
+  };
 
   return (
     <>
-    <div className="p-6 bg-white rounded-xl shadow">
-      <h1>User Management</h1>
+      <div className="p-6 bg-white rounded-xl shadow">
+        <h1>User Management</h1>
 
-      {/* Top Bar */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-      <input
-        type="text"
-        placeholder="Search users..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
-      />
+        {/* Top Bar */}
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
+          />
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="">All Roles</option>
+            <option value="Donor">Donor</option>
+            <option value="Beneficiary">Beneficiary</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
 
+        {/* Table */}
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-max w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
+                <th className="p-3 border">Name</th>
+                <th className="p-3 border">Email</th>
+                <th className="p-3 border">Role</th>
+                <th className="p-3 border">Status</th>
+                <th className="p-3 border">Location</th>
+                <th className="p-3 border">Donations</th>
+                <th className="p-3 border">Join Date</th>
+                <th className="p-3 border text-center">Actions</th>
+              </tr>
+            </thead>
 
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="">All Roles</option>
-          <option value="Donor">Donor</option>
-          <option value="Beneficiary">Beneficiary</option>
-          <option value="Admin">Admin</option>
-        </select>
-
-
-      </div>
-
-      {/* Responsive Scroll */}
-      <div className="w-full overflow-x-auto">
-        <table className="min-w-max w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
-              <th className="p-3 border">Name</th>
-              <th className="p-3 border">Email</th>
-              <th className="p-3 border">Role</th>
-              <th className="p-3 border">Status</th>
-              <th className="p-3 border">Location</th>
-              <th className="p-3 border">Donations</th>
-              <th className="p-3 border">Join Date</th>
-              <th className="p-3 border text-center">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody className="text-gray-700">
-            {users && users.length > 0 ? (
-              users.map((user) => (
-                <tr key={user._id} className="border-b hover:bg-gray-50">
-                  <td className="p-3 border">{user.name}</td>
-                  <td className="p-3 border">{user.email}</td>
-                  <td className="p-3 border">{user.role}</td>
-                  <td className="p-3 border">{user.isActive}</td>
-                  <td className="p-3 border">{user.location || "N/A"}</td>
-                  <td className="p-3 border">{user.donations?.length || 0}</td>
-                  <td className="p-3 border">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-
-                  {/* Action buttons */}
-                  <td className="p-3 border">
-                    <div className="flex gap-2 justify-center">
-                      <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
-                       onClick={()=>{
-                        handleUser(user._id);
-                         setViewUser(true)}}
-                      >
-                        <LuEye />
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(user._id)}
-                        className="px-3 py-1 text-sm bg-red-500 text-white rounded"
-                      >
-                        <MdDelete />
-                      </button>
-                    </div>
+            <tbody className="text-gray-700">
+              {users && users.length > 0 ? (
+                users.map((user) => (
+                  <tr key={user._id} className="border-b hover:bg-gray-50">
+                    <td className="p-3 border">{user.name}</td>
+                    <td className="p-3 border">{user.email}</td>
+                    <td className="p-3 border">{user.role}</td>
+                    <td className="p-3 border">{user.isActive ? "Active" : "Inactive"}</td>
+                    <td className="p-3 border">{user.location || "N/A"}</td>
+                    <td className="p-3 border">{user.donations?.length || 0}</td>
+                    <td className="p-3 border">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3 border">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                          onClick={() => {
+                            handleUser(user._id);
+                            setViewUser(true);
+                          }}
+                        >
+                          <LuEye />
+                        </button>
+                        <button
+                          className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+                          onClick={() => handleDelete(user._id)}
+                        >
+                          <MdDelete />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center p-4 text-gray-500">
+                    No users found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center p-4 text-gray-500">
-                  No users found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    {viewUser&&(
-      <ViewUser setViewUser={setViewUser} userDetails={userDetails} token={token} setUserDetails={setUserDetails} handleDelete={handleDelete}/>
-    )}
+      {/* View User Modal */}
+      {viewUser && (
+        <ViewUser
+          setViewUser={setViewUser}
+          userDetails={userDetails}
+          token={token}
+          setUserDetails={setUserDetails}
+          handleDelete={handleDelete}
+        />
+      )}
     </>
   );
 };

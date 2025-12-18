@@ -1,31 +1,32 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import api from "./axios"; // centralized axios instance
 
 const Donations = ({ donations, setDonations }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/api/donations/my-donations",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await api.get("/api/donations/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setDonations(res.data.donations || res.data);
       } catch (err) {
+        console.error(err);
         setError("Failed to load donations. Please try again.");
       } finally {
         setIsLoading(false);
       }
     };
     fetchDonations();
-  }, []);
+  }, [setDonations, token]);
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/donations/${id}`, {
+      await api.delete(`/api/donations/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDonations((prev) => prev.filter((d) => d._id !== id));
@@ -35,10 +36,16 @@ const Donations = ({ donations, setDonations }) => {
   };
 
   if (isLoading)
-    return <p className="text-center mt-10 text-gray-500 text-lg">Loading donations...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-500 text-lg">
+        Loading donations...
+      </p>
+    );
 
   if (error)
-    return <p className="text-center mt-10 text-red-500 font-semibold">{error}</p>;
+    return (
+      <p className="text-center mt-10 text-red-500 font-semibold">{error}</p>
+    );
 
   if (!donations || donations.length === 0)
     return (
@@ -47,7 +54,6 @@ const Donations = ({ donations, setDonations }) => {
       </p>
     );
 
-  // Status badge colors
   const getStatusColor = (status) => {
     switch (status) {
       case "Pending":
@@ -79,23 +85,18 @@ const Donations = ({ donations, setDonations }) => {
                        hover:shadow-xl transition-all duration-300 
                        overflow-hidden flex flex-col"
           >
-            {/* IMAGE */}
             <img
               src={donation.image || "/hero.png"}
               alt={donation.title}
               className="w-full h-48 object-cover"
             />
-
-            {/* CONTENT */}
             <div className="p-5 flex flex-col flex-1">
               <h2 className="text-xl font-semibold text-gray-800">
                 {donation.title}
               </h2>
-
               <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                 {donation.description}
               </p>
-
               <div className="mt-3 text-sm space-y-1">
                 <p className="font-medium text-gray-700">
                   Quantity:{" "}
@@ -103,14 +104,11 @@ const Donations = ({ donations, setDonations }) => {
                     {donation.quantity} Kg
                   </span>
                 </p>
-
                 <p className="text-gray-600 italic">{donation.location}</p>
-
                 <p className="text-xs text-gray-400">
                   Posted on {new Date(donation.createdAt).toLocaleDateString()}
                 </p>
               </div>
-
               <span
                 className={`mt-4 inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
                   donation.donationStatus

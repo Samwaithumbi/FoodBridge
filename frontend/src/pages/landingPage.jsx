@@ -3,6 +3,7 @@ import Hero from "../components/langingpageComps/hero";
 import NavBar from "../components/langingpageComps/navbar";
 
 const LandingPage = () => {
+ 
     return ( 
         <div>
             <NavBar/>

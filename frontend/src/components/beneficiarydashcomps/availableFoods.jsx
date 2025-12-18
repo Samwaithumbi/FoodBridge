@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../axios"; // centralized axios instance
 
 const AvailableFood = () => {
   const [availableDonations, setAvailableDonations] = useState([]);
-  const [message, setMessage]=useState("")
+  const [message, setMessage] = useState("");
   const token = localStorage.getItem("token");
 
   // Fetching available donations
   useEffect(() => {
     const fetchAvailableDonations = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/donations/available");
+        const res = await api.get("/api/donations/available", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAvailableDonations(res.data.donations);
         console.log(res.data);
       } catch (error) {
         console.log(error.message);
-        toast.error("❌Failed to fetch available donations");
+        toast.error("❌ Failed to fetch available donations");
       }
     };
 
     fetchAvailableDonations();
-  }, []);
+  }, [token]);
 
   // Requesting donation
   const handleRequest = async (donationId) => {
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/requests/create",
+      const res = await api.post(
+        "/api/requests/create",
         { donationId, message },
         {
           headers: {
@@ -37,13 +39,13 @@ const AvailableFood = () => {
         }
       );
 
-      console.log("req successfully", res.data);
-      toast.success("✅Request was successful");
+      console.log("Request successful:", res.data);
+      toast.success("✅ Request was successful");
     } catch (error) {
       if (error.response?.status === 400) {
         toast.warning(error.response.data.message);
       } else {
-        toast.error("Something went wrong. Try again.", {error});
+        toast.error("Something went wrong. Try again.", { error });
         console.log(error);
       }
     }
@@ -51,7 +53,6 @@ const AvailableFood = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 md:px-10">
-
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-10">
         <h1 className="text-4xl font-bold text-green-700">Available Food</h1>
@@ -116,7 +117,6 @@ const AvailableFood = () => {
                   <div>
                     <p className="text-sm text-gray-500">Status</p>
                     <p>{donation.request?.reqStatus || "No Request"}</p>
-
                   </div>
                 </div>
 

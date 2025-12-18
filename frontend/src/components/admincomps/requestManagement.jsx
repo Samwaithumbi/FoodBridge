@@ -1,8 +1,8 @@
 import { useState } from "react";
-import ViewRequest from "./viewRequest";
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
-import axios from "axios";
+import ViewRequest from "./viewRequest";
+import api from "../axios"; // centralized axios instance
 
 const RequestManagement = ({ requests, token }) => {
   const [viewRequest, setViewRequest] = useState(false);
@@ -10,19 +10,19 @@ const RequestManagement = ({ requests, token }) => {
 
   const handleViewRequest = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/requests/${id}`, {
+      const res = await api.get(`/api/requests/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequestDetails(res.data);
       setViewRequest(true);
     } catch (error) {
-      console.log("Failed to fetch Request info", error);
+      console.log("Failed to fetch request info", error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/requests/${id}/delete`, {
+      await api.delete(`/api/requests/${id}/delete`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setViewRequest(false);
@@ -40,10 +40,9 @@ const RequestManagement = ({ requests, token }) => {
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
           <input
             type="text"
-            placeholder="Search donations..."
+            placeholder="Search requests..."
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
           />
-
           <select className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-40">
             <option>All Roles</option>
             <option>Admin</option>
@@ -52,7 +51,7 @@ const RequestManagement = ({ requests, token }) => {
           </select>
         </div>
 
-        {/* Responsive Table */}
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse table-auto">
             <thead className="bg-gray-100 text-gray-600 text-sm uppercase">
@@ -71,10 +70,7 @@ const RequestManagement = ({ requests, token }) => {
             <tbody className="text-gray-700 text-sm">
               {requests && requests.length > 0 ? (
                 requests.map((request) => (
-                  <tr
-                    key={request._id}
-                    className="border-b hover:bg-gray-50"
-                  >
+                  <tr key={request._id} className="border-b hover:bg-gray-50">
                     <td className="p-2 border break-words max-w-[100px]">{request._id}</td>
                     <td className="p-2 border">{request.donor?.name || "N/A"}</td>
                     <td className="p-2 border">{request.beneficiary?.name || "N/A"}</td>

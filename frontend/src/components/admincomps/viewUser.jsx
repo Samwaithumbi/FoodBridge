@@ -2,61 +2,57 @@ import { MdCancel, MdDelete, MdEdit, MdOutlineEmail } from "react-icons/md";
 import { FaPhone } from "react-icons/fa6";
 import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
 import { GoCircleSlash } from "react-icons/go";
-import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import api from "../../axios"; // centralized axios instance
 import getInitials from "../../utils/avatar";
 
 const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
   const [editUser, setEditUser] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: userDetails.name || "",
     email: userDetails.email || "",
     role: userDetails.role || "",
-    phone:userDetails.phone || "",
-    location:userDetails.location || "",
-    status:userDetails.status || ""
+    phone: userDetails.phone || "",
+    location: userDetails.location || "",
+    status: userDetails.status || "Active",
   });
 
   const initials = getInitials(userDetails.name);
 
-  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // PATCH request
-  const handleEditUser = async (id) => {
+  const handleEditUser = async () => {
     try {
-      const res = await axios.patch(
-        `http://localhost:3000/api/admin/users/${id}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      console.log("User updated:", res.data);
-
-      alert("User updated successfully!");
-      setEditUser(false); // close edit modal
-    } catch (error) {
-      console.error("❌ Edit error:", error.message);
-      alert("Failed to update user.");
+      setLoading(true);
+      const res = await api.patch(`/api/admin/users/${userDetails._id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("User updated successfully!");
+      setEditUser(false);
+    } catch (err) {
+      console.error("Edit error:", err);
+      toast.error("Failed to update user.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      {/* MAIN USER VIEW MODAL */}
+      {/* VIEW MODE */}
       {!editUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-
             {/* Header */}
             <div className="flex justify-between">
               <div>
                 <h2 className="text-2xl font-bold">User Details</h2>
-                <p className="font-medium">View and Manage User Details</p>
+                <p className="font-medium text-gray-600">View and manage user details</p>
               </div>
               <button onClick={() => setViewUser(false)}>
                 <MdCancel size={22} />
@@ -79,15 +75,14 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
               <div>
                 <p className="text-lg text-gray-500">Email</p>
                 <p className="flex items-center gap-1 font-semibold">
-                  <MdOutlineEmail className="text-gray-500" />
-                  {userDetails.email}
+                  <MdOutlineEmail className="text-gray-500" /> {userDetails.email}
                 </p>
               </div>
 
               <div>
                 <p className="text-lg text-gray-500">Phone</p>
                 <p className="flex items-center gap-1 font-semibold">
-                  <FaPhone className="text-gray-500" /> 011221212
+                  <FaPhone className="text-gray-500" /> {userDetails.phone || "N/A"}
                 </p>
               </div>
 
@@ -99,28 +94,28 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
               <div>
                 <p className="text-lg text-gray-500">Location</p>
                 <p className="flex items-center gap-1 font-semibold">
-                  <CiLocationOn className="text-gray-500" />
-                  Kiambu
+                  <CiLocationOn className="text-gray-500" /> {userDetails.location || "N/A"}
                 </p>
               </div>
 
               <div>
                 <p className="text-lg text-gray-500">Join Date</p>
                 <p className="flex items-center gap-1 font-semibold">
-                  <CiCalendarDate className="text-gray-500" />
+                  <CiCalendarDate className="text-gray-500" />{" "}
                   {new Date(userDetails.createdAt).toLocaleDateString()}
                 </p>
               </div>
 
               <div>
                 <p className="text-lg text-gray-500">Total Donations</p>
-                <p className="font-semibold">127</p>
+                <p className="font-semibold">{userDetails.donations?.length || 0}</p>
               </div>
             </div>
 
-            {/* ACTIONS */}
+            {/* Actions */}
             <div className="flex justify-between gap-3 mt-6">
               <button
+                disabled={loading}
                 onClick={() => {
                   handleDelete(userDetails._id);
                   setViewUser(false);
@@ -136,6 +131,7 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
               </button>
 
               <button
+                disabled={loading}
                 onClick={() => setEditUser(true)}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg flex gap-1 items-center"
               >
@@ -146,7 +142,7 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
         </div>
       )}
 
-      {/* EDIT USER MODAL */}
+      {/* EDIT MODE */}
       {editUser && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="w-[450px] bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
@@ -156,49 +152,18 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
             </div>
 
             <form className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col">
-                <label>Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  className="border p-2 rounded shadow shadow-gray-500"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="border p-2 rounded shadow shadow-gray-500"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label>Phone</label>
-                <input
-                  type="number"
-                  name="phone"
-                  className="border p-2 rounded shadow shadow-gray-500"
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label>Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  className="border p-2 rounded shadow shadow-gray-500"
-                  value={formData.location}
-                  onChange={handleChange}
-                />
-              </div>
+              {["name", "email", "phone", "location"].map((field) => (
+                <div key={field} className="flex flex-col">
+                  <label className="capitalize">{field}</label>
+                  <input
+                    type={field === "email" ? "email" : field === "phone" ? "number" : "text"}
+                    name={field}
+                    className="border p-2 rounded shadow shadow-gray-500"
+                    value={formData[field]}
+                    onChange={handleChange}
+                  />
+                </div>
+              ))}
 
               <div className="flex flex-col">
                 <label>Role</label>
@@ -213,17 +178,18 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
                   <option value="beneficiary">Beneficiary</option>
                 </select>
               </div>
+
               <div className="flex flex-col">
-                <label>status</label>
+                <label>Status</label>
                 <select
                   name="status"
                   className="border p-2 rounded shadow shadow-gray-500"
                   value={formData.status}
                   onChange={handleChange}
                 >
-                  <option value="admin">Active</option>
-                  <option value="donor">Domant</option>
-                  <option value="beneficiary">Inactive</option>
+                  <option value="Active">Active</option>
+                  <option value="Dormant">Dormant</option>
+                  <option value="Inactive">Inactive</option>
                 </select>
               </div>
             </form>
@@ -237,7 +203,8 @@ const ViewUser = ({ setViewUser, userDetails, token, handleDelete }) => {
               </button>
 
               <button
-                onClick={() => handleEditUser(userDetails._id)}
+                disabled={loading}
+                onClick={handleEditUser}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg"
               >
                 Save Changes

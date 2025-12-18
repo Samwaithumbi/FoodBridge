@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react"; 
 import Analytics from "@/components/admincomps/analytics";
 import AdminUsersTable from "@/components/admincomps/userManagement";
-import axios from "axios";
 import DonationManagement from "@/components/admincomps/donationsManagement";
 import RequestManagement from "@/components/admincomps/requestManagement";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import api from "../axios"; // centralized axios instance
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [allDonations, setAllDonations] = useState([]);
   const [availableDonations, setAvailableDonations] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [activePage, setActivePage]=useState("User Management")
+  const [activePage, setActivePage] = useState("User Management");
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MjVhNjQxNmY4YjY2NzdjY2EyZjI2OSIsImlhdCI6MTc2NDA3NTEwOSwiZXhwIjoxNzY2NjY3MTA5fQ.xOBdRvTR4zPtzW7BxVE8lC2zNYhfbSYfMAFykI00AGU";
+  const token = localStorage.getItem("token"); // use real token
 
   useEffect(() => {
     async function fetchDetails() {
       try {
         const [availableDonationRes, requestsRes] = await Promise.all([
-          axios.get("http://localhost:3000/api/donations/available", {
+          api.get("/api/donations/available", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:3000/api/requests/pending-requests", {
+          api.get("/api/requests/pending-requests", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -40,12 +39,9 @@ const Admin = () => {
 
   const fetchDonations = async () => {
     try {
-      const donationRes = await axios.get(
-        "http://localhost:3000/api/admin/donations",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const donationRes = await api.get("/api/admin/donations", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setAllDonations(donationRes.data.donations);
     } catch (error) {
       console.error("Error refreshing donations:", error);
@@ -55,21 +51,16 @@ const Admin = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-gray-100">
-        {/* Sidebar */}
-        <AppSidebar activePage={activePage} setActivePage={setActivePage}/>
-        
-        {/* Main Content */}
+        <AppSidebar activePage={activePage} setActivePage={setActivePage} />
         <div className="flex-1 flex flex-col">
           <SidebarTrigger className="md:hidden p-2 m-2 bg-blue-500 text-white rounded-md" />
 
           <main className="p-4 md:p-8 w-full">
-            {/* Header */}
             <div className="mb-6 text-center md:text-left">
               <h1 className="text-2xl md:text-3xl font-bold mb-2">Admin Panel</h1>
               <p className="text-gray-600">Managing FoodBridge platform and users</p>
             </div>
 
-            {/* Analytics */}
             <div className="mb-8">
               <Analytics
                 users={users}
@@ -79,7 +70,6 @@ const Admin = () => {
               />
             </div>
 
-            <div>
             {activePage === "Dashboard" && (
               <div className="mb-8">
                 <Analytics
@@ -91,14 +81,12 @@ const Admin = () => {
               </div>
             )}
 
-            {/* ================== USER MANAGEMENT ================== */}
             {activePage === "User Management" && (
               <div className="bg-white p-6 rounded-xl shadow-md">
                 <AdminUsersTable token={token} users={users} setUsers={setUsers} />
               </div>
             )}
 
-            {/* ================== DONATION MANAGEMENT ================== */}
             {activePage === "Donation Management" && (
               <div className="bg-white p-6 rounded-xl shadow-md">
                 <DonationManagement
@@ -110,28 +98,23 @@ const Admin = () => {
               </div>
             )}
 
-            {/* ================== REQUEST MANAGEMENT ================== */}
             {activePage === "Request Management" && (
               <div className="bg-white p-6 rounded-xl shadow-md">
                 <RequestManagement token={token} requests={requests} />
               </div>
             )}
 
-            {/* ================== PROFILE ================== */}
             {activePage === "Profile" && (
               <div className="bg-white p-6 rounded-xl shadow-md text-center">
                 <p>Your profile features go here.</p>
               </div>
             )}
 
-            {/* ================== SETTINGS ================== */}
             {activePage === "Settings" && (
               <div className="bg-white p-6 rounded-xl shadow-md text-center">
                 <p>Settings panel coming soon.</p>
-               
-            </div>
+              </div>
             )}
-            </div>
           </main>
         </div>
       </div>

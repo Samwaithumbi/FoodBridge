@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { registerUser } from "../apis/auth.api";
+import api from "../axios"; // centralized axios instance
 
 const Register = () => {
   const navigate = useNavigate();
@@ -41,16 +41,13 @@ const Register = () => {
     try {
       setLoading(true);
 
-      await registerUser({
-        name,
-        email,
-        password,
-        role,
-      });
+      // API call directly in JSX
+      await api.post("/api/auth/register", { name, email, password, role });
 
       toast.success("Registration successful. Please log in.");
       navigate("/login");
     } catch (err) {
+      console.error(err);
       toast.error(
         err.response?.data?.message || "Registration failed. Try again."
       );

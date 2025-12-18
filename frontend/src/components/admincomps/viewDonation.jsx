@@ -1,51 +1,41 @@
-import axios from "axios";
+import api from "../axios"; // centralized axios
 import { CiCalendarDate } from "react-icons/ci";
 import { MdCancel, MdDelete } from "react-icons/md";
 import { TiTick } from "react-icons/ti";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
-const ViewDonation = ({
-  setViewDonation,
-  donationDetails,
-  token,
-  refreshDonations,
-}) => {
+const ViewDonation = ({ setViewDonation, donationDetails, token, refreshDonations }) => {
   const donation = donationDetails?.donation;
+  const [loading, setLoading] = useState(false);
 
   if (!donation) return null;
 
-  const authHeader = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
+  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
-  const handleApprove = async () => {
-    await axios.patch(
-      `http://localhost:3000/api/admin/donations/${donation._id}/approve`,
-      {},
-      authHeader
-    );
-    await refreshDonations?.();
-    setViewDonation(false);
-  };
+  const handleAction = async (action) => {
+    try {
+      setLoading(true);
+      if (action === "approve") {
+        await api.patch(`/api/admin/donations/${donation._id}/approve`, {}, authHeader);
+        toast.success("Donation approved");
+      } else if (action === "reject") {
+        await api.patch(`/api/admin/donations/${donation._id}/reject`, {}, authHeader);
+        toast.info("Donation rejected");
+      } else if (action === "delete") {
+        if (!confirm("Are you sure you want to delete this donation?")) return;
+        await api.delete(`/api/admin/donations/${donation._id}`, authHeader);
+        toast.success("Donation deleted");
+      }
 
-  const handleReject = async () => {
-    await axios.patch(
-      `http://localhost:3000/api/admin/donations/${donation._id}/reject`,
-      {},
-      authHeader
-    );
-    await refreshDonations?.();
-    setViewDonation(false);
-  };
-
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this donation?")) return;
-
-    await axios.delete(
-      `http://localhost:3000/api/admin/donations/${donation._id}`,
-      authHeader
-    );
-    await refreshDonations?.();
-    setViewDonation(false);
+      await refreshDonations?.();
+      setViewDonation(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Action failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const statusColor = {
@@ -61,17 +51,12 @@ const ViewDonation = ({
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
       onClick={() => setViewDonation(false)}
     >
-      <div
-        className="w-[480px] bg-white rounded-2xl shadow-xl p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="w-[480px] bg-white rounded-2xl shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
             <h2 className="text-xl font-bold">Donation Details</h2>
-            <span
-              className={`inline-block mt-1 px-2 py-1 rounded text-sm ${statusColor[donation.donationStatus]}`}
-            >
+            <span className={`inline-block mt-1 px-2 py-1 rounded text-sm ${statusColor[donation.donationStatus]}`}>
               {donation.donationStatus}
             </span>
           </div>
@@ -82,11 +67,7 @@ const ViewDonation = ({
 
         {/* Image */}
         {donation.image && (
-          <img
-            src={donation.image}
-            alt={donation.title}
-            className="w-full h-40 object-cover rounded-lg mb-4"
-          />
+          <img src={donation.image} alt={donation.title} className="w-full h-40 object-cover rounded-lg mb-4" />
         )}
 
         {/* Info */}
@@ -123,7 +104,8 @@ const ViewDonation = ({
         {/* Actions */}
         <div className="flex justify-between gap-2 mt-6">
           <button
-            onClick={handleDelete}
+            disabled={loading}
+            onClick={() => handleAction("delete")}
             className="px-4 py-2 bg-red-500 text-white rounded-lg"
           >
             <MdDelete />
@@ -132,14 +114,16 @@ const ViewDonation = ({
           {donation.donationStatus === "Pending" && (
             <>
               <button
-                onClick={handleReject}
+                disabled={loading}
+                onClick={() => handleAction("reject")}
                 className="px-4 py-2 bg-gray-600 text-white rounded-lg"
               >
                 Reject
               </button>
               <button
-                onClick={handleApprove}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                disabled={loading}
+                onClick={() => handleAction("approve")}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg flex items-center gap-1"
               >
                 <TiTick /> Approve
               </button>

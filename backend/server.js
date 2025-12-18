@@ -24,11 +24,22 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors({
-  origin: "https://food-bridge-ee690dbob-samuels-projects-af949603.vercel.app",
-  credentials: true,
-}));
+const allowedOrigins = [
+  'http://localhost:5173', // for local dev
+  'https://food-bridge-git-main-samuels-projects-af949603.vercel.app' // your deployed frontend
+];
 
+app.use(cors({
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true); // allow non-browser requests like Postman
+    if(allowedOrigins.indexOf(origin) === -1){
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 
 //routes
 app.use("/api/auth", authRoutes);

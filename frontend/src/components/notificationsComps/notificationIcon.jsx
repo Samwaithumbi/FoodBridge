@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { FaBell } from "react-icons/fa";
+import api from "../axios"; // your centralized axios instance
 
 const NotificationBell = () => {
   const [isBellClicked, setIsBellClicked] = useState(false);
@@ -10,10 +10,9 @@ const NotificationBell = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/notifications/my-notifications", {
+        const res = await api.get("/api/notifications/my-notifications", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        
         setNotifications(res.data.notifications || []);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -25,12 +24,12 @@ const NotificationBell = () => {
 
   const handleRead = async () => {
     try {
-      await axios.put(
-        "http://localhost:3000/api/notifications/read/all",
+      await api.put(
+        "/api/notifications/read/all",
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       // Update UI immediately
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, isRead: true }))
@@ -39,7 +38,6 @@ const NotificationBell = () => {
       console.error(error);
     }
   };
-  
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -61,44 +59,42 @@ const NotificationBell = () => {
 
       {/* Notifications Dropdown */}
       {isBellClicked && (
-       <div
-       className="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto"
-     >
-       {/* Header */}
-       <div className="flex items-center justify-between px-4 py-3 border-b">
-         <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
-         <button
-           className="text-sm text-red-600 hover:text-red-700 font-medium"
-           onClick={handleRead}
-         >
-           Mark all as Read
-         </button>
-       </div>
-     
-       {/* Body */}
-       {notifications.length === 0 ? (
-         <p className="p-4 text-sm text-gray-500 text-center">
-           No notifications yet.
-         </p>
-       ) : (
-         notifications.map((n) => (
-           <div
-             key={n._id}
-             className={`px-4 py-3 text-sm border-b transition 
-               ${n.isRead ? "bg-gray-50" : "bg-yellow-50"} 
-               hover:bg-gray-100 cursor-pointer`}
-           >
-             <p className="font-semibold text-gray-800">{n.title}</p>
-             <p className="text-gray-600 mt-0.5">{n.message}</p>
-     
-             <small className="text-gray-500 block mt-2 text-xs">
-               {new Date(n.createdAt).toLocaleString()}
-             </small>
-           </div>
-         ))
-       )}
-     </div>
-      )}     
+        <div className="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b">
+            <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+            <button
+              className="text-sm text-red-600 hover:text-red-700 font-medium"
+              onClick={handleRead}
+            >
+              Mark all as Read
+            </button>
+          </div>
+
+          {/* Body */}
+          {notifications.length === 0 ? (
+            <p className="p-4 text-sm text-gray-500 text-center">
+              No notifications yet.
+            </p>
+          ) : (
+            notifications.map((n) => (
+              <div
+                key={n._id}
+                className={`px-4 py-3 text-sm border-b transition 
+                  ${n.isRead ? "bg-gray-50" : "bg-yellow-50"} 
+                  hover:bg-gray-100 cursor-pointer`}
+              >
+                <p className="font-semibold text-gray-800">{n.title}</p>
+                <p className="text-gray-600 mt-0.5">{n.message}</p>
+
+                <small className="text-gray-500 block mt-2 text-xs">
+                  {new Date(n.createdAt).toLocaleString()}
+                </small>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 };

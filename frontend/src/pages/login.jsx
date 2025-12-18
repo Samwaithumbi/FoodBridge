@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { loginUser } from "../apis/auth.api";
+import api from "../axios"; // centralized axios instance
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,7 +33,8 @@ export default function Login() {
     try {
       setIsLoading(true);
 
-      const res = await loginUser(formData);
+      // API call directly in JSX
+      const res = await api.post("/api/auth/login", formData);
 
       const { token, role, user } = res.data;
 
@@ -55,10 +56,10 @@ export default function Login() {
           navigate("/beneficiary-dashboard");
       }
     } catch (err) {
+      console.error(err);
       toast.error(
         err.response?.data?.message || "Login failed. Please try again."
       );
-      console.log(err);
     } finally {
       setIsLoading(false);
     }

@@ -1,50 +1,41 @@
 import { LuEye } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../axios"; // centralized axios instance
 import ViewDonation from "./viewDonation";
 
-const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonations}) => {
+const DonationManagement = ({ allDonations, setAllDonations, token, refreshDonations }) => {
   const [viewDonation, setViewDonation] = useState(false);
   const [donationDetails, setDonationDetails] = useState({});
-  const [search, setSearch] = useState("")
-  const [status, setStatus]=useState("")
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   const fetchDonations = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/admin/donations", {
-        params: {
-          q: search,
-          status: status,      
-        },
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await api.get("/api/admin/donations", {
+        params: { q: search, status },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
       setAllDonations(res.data.donations);
     } catch (error) {
-      console.log("Failed to fetch users", error);
+      console.log("Failed to fetch donations", error);
     }
   };
-  
+
   useEffect(() => {
     const delay = setTimeout(() => {
       fetchDonations();
     }, 100);
-  
+
     return () => clearTimeout(delay);
   }, [search, status]);
-  
-  
 
   const handleViewDonation = async (id) => {
     try {
-      const res = await axios.get(
-        `http://localhost:3000/api/admin/donations/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-     console.log(res.data);
+      const res = await api.get(`/api/admin/donations/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(res.data);
       setDonationDetails(res.data);
       setViewDonation(true); // open modal AFTER data loads
     } catch (error) {
@@ -52,33 +43,31 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
     }
   };
 
- //deleting  donation
- const handleDelete = async (id) => {
-  try {
-    await axios.delete(`http://localhost:3000/api/admin/donations/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (typeof refreshDonations === "function") await refreshDonations();
-    setViewDonation(false);
-  } catch (err) {
-    console.error("Delete failed", err);
-  }
-};
-
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/api/admin/donations/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (typeof refreshDonations === "function") await refreshDonations();
+      setViewDonation(false);
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
 
   return (
     <>
       <div className="p-6 bg-white rounded-xl shadow">
-           <h1>Donation Management</h1>
+        <h1>Donation Management</h1>
         <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
-            <input
+          <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search donations..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3"
           />
-         <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">Status</option>
             <option value="Pending">Pending</option>
             <option value="Available">Available</option>
@@ -86,10 +75,9 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
             <option value="Claimed">Claimed</option>
             <option value="Expired">Expired</option>
           </select>
-
         </div>
 
-      {/* Table Wrapper */}
+        {/* Table */}
         <div className="w-full overflow-x-auto sm:rounded-lg">
           <table className="min-w-max w-full border-collapse">
             <thead>
@@ -103,27 +91,18 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
                 <th className="p-3 border whitespace-nowrap text-center">Actions</th>
               </tr>
             </thead>
-
             <tbody className="text-gray-700">
               {allDonations && allDonations.length > 0 ? (
                 allDonations.map((donation) => (
                   <tr key={donation._id} className="border-b hover:bg-gray-50">
-                    <td className="p-3 border whitespace-nowrap">
-                      {donation.donor?.name || "unknown"}
-                    </td>
+                    <td className="p-3 border whitespace-nowrap">{donation.donor?.name || "unknown"}</td>
                     <td className="p-3 border whitespace-nowrap">{donation.title}</td>
                     <td className="p-3 border whitespace-nowrap">{donation.donationStatus}</td>
-                    <td className="p-3 border whitespace-nowrap">
-                      {donation.location || "N/A"}
-                    </td>
-                    <td className="p-3 border whitespace-nowrap">
-                      {donation.quantity || 0}
-                    </td>
+                    <td className="p-3 border whitespace-nowrap">{donation.location || "N/A"}</td>
+                    <td className="p-3 border whitespace-nowrap">{donation.quantity || 0}</td>
                     <td className="p-3 border whitespace-nowrap">
                       {new Date(donation.expiryDate).toLocaleDateString()}
                     </td>
-
-                    {/* Actions */}
                     <td className="p-3 border whitespace-nowrap">
                       <div className="flex gap-2 justify-center flex-shrink-0">
                         <button
@@ -132,7 +111,6 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
                         >
                           <LuEye />
                         </button>
-
                         <button
                           onClick={() => handleDelete(donation._id)}
                           className="px-3 py-1 text-sm bg-red-500 text-white rounded"
@@ -153,21 +131,19 @@ const DonationManagement = ({ allDonations,setAllDonations, token , refreshDonat
             </tbody>
           </table>
         </div>
-
       </div>
 
       {/* View Donation Modal */}
       {viewDonation && (
-       <ViewDonation
-        setViewDonation={setViewDonation}
-        donationDetails={donationDetails}
-        token={token}
-        refreshDonations={refreshDonations}
-      />
-     
+        <ViewDonation
+          setViewDonation={setViewDonation}
+          donationDetails={donationDetails}
+          token={token}
+          refreshDonations={refreshDonations}
+        />
       )}
     </>
   );
-}
+};
 
 export default DonationManagement;

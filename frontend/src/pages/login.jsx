@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { loginUser } from "../api/auth.api";
+import { loginUser } from "../apis/auth.api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -58,6 +58,7 @@ export default function Login() {
       toast.error(
         err.response?.data?.message || "Login failed. Please try again."
       );
+      console.log(err);
     } finally {
       setIsLoading(false);
     }

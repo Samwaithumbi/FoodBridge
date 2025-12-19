@@ -3,7 +3,7 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "https://foodbridge-24wb.onrender.com",
   withCredentials: true, // if backend sets cookies
-  timeout: 15000,
+  timeout: 60000,
 });
 console.log(import.meta.env.VITE_API_URL);
 

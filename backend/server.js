@@ -12,6 +12,8 @@ const requestsRoutes = require("./src/routes/requests.routes");
 const adminRoutes = require("./src/routes/admin.routes");
 const notificationRoutes = require("./src/routes/notification.routes");
 
+console.log("🔥 NEW SERVER VERSION LOADED");
+
 // Middleware
 const errorHandler = require("./src/middleware/errorHandler");
 
@@ -24,22 +26,27 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 const allowedOrigins = [
-  'http://localhost:5173', // for local dev
-  'https://food-bridge-git-main-samuels-projects-af949603.vercel.app' // your deployed frontend
+  "https://food-bridge-2bvmyk925-samuels-projects-af949603.vercel.app",
 ];
 
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin) return callback(null, true); // allow non-browser requests like Postman
-    if(allowedOrigins.indexOf(origin) === -1){
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+  origin: function (origin, callback) {
+    // allow server-to-server & tools like Postman
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
     }
-    return callback(null, true);
   },
-  credentials: true
+  credentials: true,
 }));
+
+app.options(/.*/, cors())
+
 
 //routes
 app.use("/api/auth", authRoutes);

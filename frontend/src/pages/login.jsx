@@ -41,7 +41,7 @@ export default function Login() {
       // Persist auth
       localStorage.setItem("token", token);
       localStorage.setItem("userName", name);
-      localStorage.setItem("userId", userId);
+      localStorage.setItem("userId", _id);
 
       toast.success("Login successful");
 

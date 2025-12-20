@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 const allowedOrigins = [
-  "https://food-bridge-2bvmyk925-samuels-projects-af949603.vercel.app",
+  "https://food-bridge-ptn9cmm5g-samuels-projects-af949603.vercel.app"
 ];
 
 app.use(cors({

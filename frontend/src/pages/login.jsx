@@ -36,7 +36,7 @@ export default function Login() {
       // API call directly in JSX
       const res = await api.post("/api/auth/login", formData);
 
-      const { token, role, name } = res.data;
+      const { token, role, name, _id } = res.data;
 
       // Persist auth
       localStorage.setItem("token", token);

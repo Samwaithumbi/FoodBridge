@@ -22,13 +22,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
 const allowedOrigins = [
-  "https://food-bridge-ptn9cmm5g-samuels-projects-af949603.vercel.app"
+  "https://food-bridge-git-main-samuels-projects-af949603.vercel.app",
+  "http://localhost:5173"
 ];
 
 app.use(cors({
@@ -46,6 +42,9 @@ app.use(cors({
 }));
 
 app.options(/.*/, cors())
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 //routes

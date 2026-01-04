@@ -103,6 +103,7 @@ export default function Login() {
             </label>
             <input
               type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
               name="password"
               value={formData.password}
               onChange={handleChange}

@@ -10,7 +10,7 @@ const Donations = ({ donations, setDonations }) => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const res = await api.get("/api/donations/my", {
+        const res = await api.get("/api/donations/my-donations", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDonations(res.data.donations || res.data);

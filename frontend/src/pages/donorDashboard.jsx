@@ -26,7 +26,7 @@ export default function Layout() {
           <DonorWelcome  donations={donations} setDonations={setDonations} name={name} />
         </section>
         <section className="mb-6">
-          <Stats />
+          <Stats donations={donations}/>
         </section>
         <section>
           <Donations donations={donations} setDonations={setDonations}/>

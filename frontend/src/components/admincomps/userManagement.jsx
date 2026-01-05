@@ -76,8 +76,8 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
         </div>
 
         {/* Table */}
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-max w-full border-collapse">
+        <div className="relative -mx-6 sm:mx-0 overflow-x-auto">
+          <table className="min-w-[100px] w-full border-collapse ">
             <thead>
               <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
                 <th className="p-3 border">Name</th>

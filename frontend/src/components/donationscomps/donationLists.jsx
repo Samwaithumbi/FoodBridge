@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import api from "../../apis/axios"; 
+import api from "../../apis/axios";
 
 const Donations = ({ donations, setDonations }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -35,6 +38,20 @@ const Donations = ({ donations, setDonations }) => {
     }
   };
 
+  const safeDonations = Array.isArray(donations) ? donations : [];
+
+  const filteredDonations = safeDonations.filter((donation) => {
+    const matchesStatus =
+      statusFilter === "All" || donation.donationStatus === statusFilter;
+  
+    const matchesSearch =
+      donation.title.toLowerCase().includes(search.toLowerCase()) ||
+      donation.location.toLowerCase().includes(search.toLowerCase());
+  
+    return matchesStatus && matchesSearch;
+  });
+  
+
   if (isLoading)
     return (
       <p className="text-center mt-10 text-gray-500 text-lg">
@@ -45,13 +62,6 @@ const Donations = ({ donations, setDonations }) => {
   if (error)
     return (
       <p className="text-center mt-10 text-red-500 font-semibold">{error}</p>
-    );
-
-  if (!donations || donations.length === 0)
-    return (
-      <p className="text-center mt-10 text-gray-400 italic text-lg">
-        You haven't made any donations yet.
-      </p>
     );
 
   const getStatusColor = (status) => {
@@ -73,12 +83,44 @@ const Donations = ({ donations, setDonations }) => {
 
   return (
     <div className="px-4 md:px-10 py-10 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-bold text-green-700 mb-8 text-center md:text-left">
+      <h1 className="text-4xl font-bold text-green-700 mb-6 text-center md:text-left">
         My Donations
       </h1>
 
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <input
+          type="text"
+          placeholder="Search by title or location..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:w-1/2 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="w-full md:w-1/4 px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400"
+        >
+          <option value="All">All Statuses</option>
+          <option value="Available">Available</option>
+          <option value="Pending">Pending</option>
+          <option value="Claimed">Claimed</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Expired">Expired</option>
+        </select>
+      </div>
+
+      {/* Empty filter state */}
+      {filteredDonations.length === 0 && (
+        <p className="text-center mt-10 text-gray-400 italic text-lg">
+          No donations match your filter criteria.
+        </p>
+      )}
+
+      {/* Donations Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {donations.map((donation) => (
+        {filteredDonations.map((donation) => (
           <div
             key={donation._id}
             className="bg-white border border-gray-200 rounded-2xl shadow-md 
@@ -90,13 +132,16 @@ const Donations = ({ donations, setDonations }) => {
               alt={donation.title}
               className="w-full h-48 object-cover"
             />
+
             <div className="p-5 flex flex-col flex-1">
               <h2 className="text-xl font-semibold text-gray-800">
                 {donation.title}
               </h2>
+
               <p className="text-gray-600 text-sm mt-1 line-clamp-2">
                 {donation.description}
               </p>
+
               <div className="mt-3 text-sm space-y-1">
                 <p className="font-medium text-gray-700">
                   Quantity:{" "}
@@ -104,11 +149,15 @@ const Donations = ({ donations, setDonations }) => {
                     {donation.quantity} Kg
                   </span>
                 </p>
+
                 <p className="text-gray-600 italic">{donation.location}</p>
+
                 <p className="text-xs text-gray-400">
-                  Posted on {new Date(donation.createdAt).toLocaleDateString()}
+                  Posted on{" "}
+                  {new Date(donation.createdAt).toLocaleDateString()}
                 </p>
               </div>
+
               <span
                 className={`mt-4 inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
                   donation.donationStatus
@@ -133,3 +182,4 @@ const Donations = ({ donations, setDonations }) => {
 };
 
 export default Donations;
+

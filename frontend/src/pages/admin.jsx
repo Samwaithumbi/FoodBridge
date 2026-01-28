@@ -50,14 +50,14 @@ const Admin = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-gray-100 ">
+      <div className="flex min-h-screen bg-gray-100 md:fixed">
         <AppSidebar activePage={activePage} setActivePage={setActivePage} />
         <div className="flex-1 flex flex-col">
           <SidebarTrigger className="md:hidden p-2 m-2 bg-blue-500 text-white rounded-md" />
 
           <main className="p-4 md:p-8 w-full max-w-full overflow-hidden">
-            <div className="mb-6 text-center md:text-left">
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-1">Admin Panel </h1>
+            <div className=" mb-10">
+            <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-1">Admin Panel </h1>
               <p className="text-sm text-gray-500"> Manage users, donations, and requests on FoodBridge</p>
 
             </div>

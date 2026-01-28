@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import {  ClipboardList, Gift, Search, Settings,Users } from "lucide-react"
  
 import {
   Sidebar,
@@ -15,15 +15,15 @@ import {
 const items = [
   {
     title: "User Management",
-    icon: Home,
+    icon: Users,
   },
   {
     title: "Donation Management",
-    icon: Inbox,
+    icon: Gift,
   },
   {
     title: "Request Management",
-    icon: Calendar,
+    icon: ClipboardList,
   },
   {
     title: "Profile",
@@ -37,10 +37,10 @@ const items = [
  
 export function AppSidebar({activePage, setActivePage }) {
   return (
-    <Sidebar className="">
-      <SidebarContent>
+    <Sidebar >
+      <SidebarContent className={`bg-slate-900 text-white`}>
         <SidebarGroup>
-          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-2xl text-amber-50 underline mb-3`}>Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -51,8 +51,8 @@ export function AppSidebar({activePage, setActivePage }) {
                   >
                     <button  className={`
                         flex items-center gap-2 w-full text-left
-                        hover:shadow shadow-amber-200
-                        ${activePage === item.title ? "bg-amber-200" : "bg-transparent"}
+                        hover:shadow shadow-slate-800
+                        ${activePage === item.title ? "bg-amber-700" : "bg-transparent"}
                       `}>
                       <item.icon />
                       <span>{item.title}</span>

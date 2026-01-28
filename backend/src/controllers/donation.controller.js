@@ -1,7 +1,7 @@
 const Donations = require("../models/donation.model");
 const mongoose = require("mongoose");
 
-
+//ccreating new donation
 const createDonation = async (req, res, next) => {
   try {
     const { title, description, location, expiryDate, quantity, image, donationStatus } = req.body;
@@ -68,7 +68,6 @@ const getAllDonations = async (req, res, next) => {
     const { q, status } = req.query;
     let filter = {};
 
-    // Search by title or description
     if (q) {
       filter.$or = [
         { title: new RegExp(q, "i") },
@@ -76,7 +75,7 @@ const getAllDonations = async (req, res, next) => {
       ];
     }
 
-    //sort by status
+    //sorting with status
     if (status && status.trim() !== "") {
       filter.donationStatus = status;
     }
@@ -92,7 +91,6 @@ const getAllDonations = async (req, res, next) => {
 // Get available donations
 const getAvailableDonations = async (req, res) => {
   try {
-   
 
     const donations = await Donations.find({
       donationStatus: "Available"

@@ -84,10 +84,10 @@ const DonationManagement = ({ allDonations, setAllDonations, token, refreshDonat
               <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
                 <th className="p-3 border whitespace-nowrap">Donor</th>
                 <th className="p-3 border whitespace-nowrap">Item Name</th>
-                <th className="p-3 border whitespace-nowrap">Status</th>
-                <th className="p-3 border whitespace-nowrap">Location</th>
-                <th className="p-3 border whitespace-nowrap">Quantity</th>
-                <th className="p-3 border whitespace-nowrap">Expiry</th>
+                <th className="p-3 border whitespace-nowrap  hidden md:table-cell">Status</th>
+                <th className="p-3 border whitespace-nowrap  hidden md:table-cell">Location</th>
+                <th className="p-3 border whitespace-nowrap  hidden md:table-cell">Quantity</th>
+                <th className="p-3 border whitespace-nowrap  hidden md:table-cell">Expiry</th>
                 <th className="p-3 border whitespace-nowrap text-center">Actions</th>
               </tr>
             </thead>
@@ -97,10 +97,10 @@ const DonationManagement = ({ allDonations, setAllDonations, token, refreshDonat
                   <tr key={donation._id} className="border-b hover:bg-gray-50">
                     <td className="p-3 border whitespace-nowrap">{donation.donor?.name || "unknown"}</td>
                     <td className="p-3 border whitespace-nowrap">{donation.title}</td>
-                    <td className="p-3 border whitespace-nowrap">{donation.donationStatus}</td>
-                    <td className="p-3 border whitespace-nowrap">{donation.location || "N/A"}</td>
-                    <td className="p-3 border whitespace-nowrap">{donation.quantity || 0}</td>
-                    <td className="p-3 border whitespace-nowrap">
+                    <td className="p-3 border whitespace-nowrap  hidden md:table-cell">{donation.donationStatus}</td>
+                    <td className="p-3 border whitespace-nowrap  hidden md:table-cell">{donation.location || "N/A"}</td>
+                    <td className="p-3 border whitespace-nowrap  hidden md:table-cell">{donation.quantity || 0}</td>
+                    <td className="p-3 border whitespace-nowrap  hidden md:table-cell">
                       {new Date(donation.expiryDate).toLocaleDateString()}
                     </td>
                     <td className="p-3 border whitespace-nowrap">

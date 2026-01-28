@@ -77,17 +77,17 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
 
         {/* Table */}
         <div className="relative -mx-6 sm:mx-0 overflow-x-auto">
-          <table className="min-w-[100px] w-full border-collapse ">
+          <table className="min-w-[100px] w-full border-collapse  ">
             <thead>
               <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
                 <th className="p-3 border">Name</th>
                 <th className="p-3 border">Email</th>
                 <th className="p-3 border">Role</th>
-                <th className="p-3 border">Status</th>
-                <th className="p-3 border">Location</th>
-                <th className="p-3 border">Donations</th>
-                <th className="p-3 border">Join Date</th>
-                <th className="p-3 border text-center">Actions</th>
+                <th className="p-3 border  hidden md:table-cell">Status</th>
+                <th className="p-3 border  hidden md:table-cell">Location</th>
+                <th className="p-3 border  hidden md:table-cell">Donations</th>
+                <th className="p-3 border  hidden md:table-cell">Join Date</th>
+                <th className="p-3 border text-center  hidden md:table-cell">Actions</th>
               </tr>
             </thead>
 
@@ -98,13 +98,13 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
                     <td className="p-3 border">{user.name}</td>
                     <td className="p-3 border">{user.email}</td>
                     <td className="p-3 border">{user.role}</td>
-                    <td className="p-3 border">{user.isActive ? "Active" : "Inactive"}</td>
-                    <td className="p-3 border">{user.location || "N/A"}</td>
-                    <td className="p-3 border">{user.donations?.length || 0}</td>
-                    <td className="p-3 border">
+                    <td className="p-3 border  hidden md:table-cell">{user.isActive ? "Active" : "Inactive"}</td>
+                    <td className="p-3 border  hidden md:table-cell">{user.location || "N/A"}</td>
+                    <td className="p-3 border  hidden md:table-cell">{user.donations?.length || 0}</td>
+                    <td className="p-3 border  hidden md:table-cell">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="p-3 border">
+                    <td className="p-3 border  hidden md:table-cell">
                       <div className="flex gap-2 justify-center">
                         <button
                           className="px-3 py-1 text-sm bg-blue-500 text-white rounded"

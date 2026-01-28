@@ -56,14 +56,14 @@ const RequestManagement = ({ requests, token }) => {
           <table className="min-w-full border-collapse table-auto">
             <thead className="bg-gray-100 text-gray-600 text-sm uppercase">
               <tr>
-                <th className="p-2 border">Request ID</th>
+                <th className="p-2 border  hidden md:table-cell">Request ID</th>
                 <th className="p-2 border">Donor</th>
                 <th className="p-2 border">Beneficiary</th>
                 <th className="p-2 border">Food Item</th>
-                <th className="p-2 border">Quantity</th>
-                <th className="p-2 border">Status</th>
-                <th className="p-2 border">Location</th>
-                <th className="p-2 border">Date</th>
+                <th className="p-2 border  hidden md:table-cell">Quantity</th>
+                <th className="p-2 border  hidden md:table-cell">Status</th>
+                <th className="p-2 border  hidden md:table-cell">Location</th>
+                <th className="p-2 border  hidden md:table-cell">Date</th>
                 <th className="p-2 border text-center">Actions</th>
               </tr>
             </thead>
@@ -71,16 +71,16 @@ const RequestManagement = ({ requests, token }) => {
               {requests && requests.length > 0 ? (
                 requests.map((request) => (
                   <tr key={request._id} className="border-b hover:bg-gray-50">
-                    <td className="p-2 border break-words max-w-[100px]">{request._id}</td>
+                    <td className="p-2 border break-words max-w-[100px]  hidden md:table-cell">{request._id}</td>
                     <td className="p-2 border">{request.donor?.name || "N/A"}</td>
                     <td className="p-2 border">{request.beneficiary?.name || "N/A"}</td>
                     <td className="p-2 border">{request.donation?.title || "N/A"}</td>
-                    <td className="p-2 border">{request.donation?.quantity || 0}</td>
-                    <td className="p-2 border">{request.reqStatus}</td>
-                    <td className="p-2 border">{request.donation?.location || "N/A"}</td>
-                    <td className="p-2 border">{new Date(request.createdAt).toLocaleDateString()}</td>
+                    <td className="p-2 border  hidden md:table-cell">{request.donation?.quantity || 0}</td>
+                    <td className="p-2 border  hidden md:table-cell">{request.reqStatus}</td>
+                    <td className="p-2 border  hidden md:table-cell">{request.donation?.location || "N/A"}</td>
+                    <td className="p-2 border  hidden md:table-cell">{new Date(request.createdAt).toLocaleDateString()}</td>
                     <td className="p-2 border">
-                      <div className="flex gap-2 justify-center">
+                      <div className="flex gap-2 justify-center flex-wrap">
                         <button
                           className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
                           onClick={() => handleViewRequest(request._id)}

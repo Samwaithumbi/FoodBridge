@@ -81,7 +81,7 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
             <thead>
               <tr className="bg-gray-100 text-left text-sm uppercase text-gray-600">
                 <th className="p-3 border">Name</th>
-                <th className="p-3 border">Email</th>
+                <th className="p-3 border hidden md:table-cell">Email</th>
                 <th className="p-3 border">Role</th>
                 <th className="p-3 border  hidden md:table-cell">Status</th>
                 <th className="p-3 border  hidden md:table-cell">Location</th>
@@ -96,7 +96,7 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
                 users.map((user) => (
                   <tr key={user._id} className="border-b hover:bg-gray-50">
                     <td className="p-3 border">{user.name}</td>
-                    <td className="p-3 border">{user.email}</td>
+                    <td className="p-3 border hidden md:table-cell">{user.email}</td>
                     <td className="p-3 border">{user.role}</td>
                     <td className="p-3 border  hidden md:table-cell">{user.isActive ? "Active" : "Inactive"}</td>
                     <td className="p-3 border  hidden md:table-cell">{user.location || "N/A"}</td>

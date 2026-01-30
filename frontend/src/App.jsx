@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import './index.css'
 import LandingPage from './pages/landingPage';
 import Register from './pages/register'
@@ -32,6 +33,7 @@ const App = () => {
          draggable
          theme="colored"  
     />
+    <Analytics />
     </>
    );
 }

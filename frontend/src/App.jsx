@@ -3,7 +3,7 @@ import './index.css'
 import LandingPage from './pages/landingPage';
 import Register from './pages/register'
 import Login from './pages/login'
-import { Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import DonorDash from './pages/donorDashboard';
 import BeneficiaryDash from './pages/beneficiaryDashboard';
 import ProfilePage from './pages/profile';
@@ -14,7 +14,10 @@ import Admin from './pages/admin';
 const App = () => {
   return ( 
     <>
-    <Routes>
+    <BrowserRouter>
+      <Analytics/>
+       
+      <Routes>
       <Route path="/" element={<LandingPage/>}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/login" element={<Login/>} />
@@ -33,7 +36,8 @@ const App = () => {
          draggable
          theme="colored"  
     />
-    <Analytics />
+    </BrowserRouter>
+   
     </>
    );
 }

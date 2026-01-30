@@ -1,4 +1,4 @@
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 import './index.css'
 import LandingPage from './pages/landingPage';
 import Register from './pages/register'

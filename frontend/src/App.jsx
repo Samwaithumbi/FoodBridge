@@ -14,9 +14,7 @@ import Admin from './pages/admin';
 const App = () => {
   return ( 
     <>
-    <BrowserRouter>
-      <Analytics/>
-       
+        <Analytics/>
       <Routes>
       <Route path="/" element={<LandingPage/>}/>
       <Route path="/register" element={<Register/>}/>
@@ -36,7 +34,7 @@ const App = () => {
          draggable
          theme="colored"  
     />
-    </BrowserRouter>
+
    
     </>
    );

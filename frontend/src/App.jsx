@@ -3,7 +3,7 @@ import './index.css'
 import LandingPage from './pages/landingPage';
 import Register from './pages/register'
 import Login from './pages/login'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import DonorDash from './pages/donorDashboard';
 import BeneficiaryDash from './pages/beneficiaryDashboard';
 import ProfilePage from './pages/profile';

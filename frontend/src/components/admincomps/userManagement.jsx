@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import ViewUser from "./viewUser";
 import api from "../../apis/axios"
 
-const AdminUsersTable = ({ users, setUsers, token }) => {
+const AdminUsersTable = ({ users, setUsers }) => {
   const [userDetails, setUserDetails] = useState({});
   const [viewUser, setViewUser] = useState(false);
   const [search, setSearch] = useState("");
@@ -15,7 +15,6 @@ const AdminUsersTable = ({ users, setUsers, token }) => {
     try {
       const res = await api.get("/api/admin/users", {
         params: { q: search, role },
-        headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data.users);
     } catch (error) {

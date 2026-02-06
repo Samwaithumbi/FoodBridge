@@ -2,7 +2,7 @@ const User = require('../models/auth.model')
 const generateToken = require('../utils/generateToken')
 
 //register new user
-const registerUser = async(req, res)=>{
+const registerUser = async(req, res,next)=>{
     const {name, email, password, role}=req.body
     try {
         //check if user exists
@@ -21,10 +21,10 @@ const registerUser = async(req, res)=>{
                 token: generateToken(user.id),
             })
         }
-        res.status(201).json({message:"User Creaed Successfully"})
+        res.status(201).json({message:"User Created Successfully"})
        
     } catch (error) {
-        res.status(500).json({message:'Error creating new user', error:error.message})
+        next(error)
     }
 
 }
@@ -49,7 +49,7 @@ const loginUser=async(req, res)=>{
         }
         res.status(200).json({message:"User loggged in", user})
     } catch (error) {
-        res.status(500).json({message:'error logging in', error})
+        next(error)
     }
 }
 

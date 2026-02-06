@@ -5,7 +5,7 @@ import DonationManagement from "@/components/admincomps/donationsManagement";
 import RequestManagement from "@/components/admincomps/requestManagement";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import api from "../apis/axios"; 
+import api from "@/apis/axios";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
